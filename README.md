@@ -1,6 +1,6 @@
 # **n8n Workflow - Twitter, YouTube News Digest**
 
-<image-card alt="n8n Workflow Screenshot" src="media/n8n-Workflow-X-YT-News-Digest-LIght.png" ></image-card>
+![n8n Workflow X, YT News Digest](media/n8n-Workflow-X-YT-News-Digest-LIght.png)
 
 A n8n workflow that creates a news digest from your favorite X Users and YouTube Channels.
 
