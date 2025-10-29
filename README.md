@@ -14,8 +14,6 @@ When I wanted to quickly check the latest news from a few trusted journalists on
 
 The goal was simple: **Extract the important news from specific sources and consume it in a clean, distraction-free format.**
 
-![n8n Workflow X, YT News Digest](media/Telegram-Message-Example.png)
-
 ## **💡 Key Features & User Benefits**
 
 This tool gives you complete control over your news consumption:
@@ -105,6 +103,8 @@ Then, it generates three parallel outputs: the `Raw Tweets Digest`, the AI-synth
 ---
 
 ### **📦 The Final Output (What You Get)**
+
+![n8n Workflow X, YT News Digest](media/Telegram-Message-Example.png)
 
 You will receive a Telegram message with links to four files:
 
