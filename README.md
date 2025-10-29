@@ -92,8 +92,6 @@ v                  v                   v
           [ Upload & Send YouTube Digest Link via Telegram ]
 ```
 
-#### **\[PLACEHOLDER: Screenshot of the entire workflow]**
-
 **Part 1: X/Twitter Processing:** The workflow scrapes all recent tweets from the specified users. It uses **Gemini AI** to summarize long posts, then aggregates all the data.
 
 Then, it generates three parallel outputs: the `Raw Tweets Digest`, the AI-synthesized `Structured News Digest`, and the `MP3 Audio Broadcast` (created using FAL AI).
@@ -108,7 +106,7 @@ Then, it generates three parallel outputs: the `Raw Tweets Digest`, the AI-synth
 
 You will receive a Telegram message with links to four files:
 
-- **Link 1 (Raw Tweets):** \[Placeholder for Sample Link 1 - Raw Tweets Digest]
+- [**Link 1 (Raw Tweets)](https://varunsharma.b-cdn.net/projects/n8n-workflow/Tweets_Digest_29_Oct_25_162057.html):** \[Placeholder for Sample Link 1 - Raw Tweets Digest]  [Anchor Text](URL)
 - **Link 2 (News Digest):** \[Placeholder for Sample Link 2 - Structured News Digest]
 - **Link 3 (Audio Broadcast):** \[Placeholder for Sample Link 3 - Audio Broadcast]
 - **Link 4 (YouTube Digest):** \[Placeholder for Sample Link 4 - YouTube Summary Digest]
