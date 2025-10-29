@@ -14,6 +14,8 @@ When I wanted to quickly check the latest news from a few trusted journalists on
 
 The goal was simple: **Extract the important news from specific sources and consume it in a clean, distraction-free format.**
 
+![n8n Workflow X, YT News Digest](media/Telegram-Message-Example.png)
+
 ## **💡 Key Features & User Benefits**
 
 This tool gives you complete control over your news consumption:
@@ -102,24 +104,22 @@ Then, it generates three parallel outputs: the `Raw Tweets Digest`, the AI-synth
 
 ---
 
-### **📦 The Final Deliverables (What You Get)**
+### **📦 The Final Output (What You Get)**
 
 You will receive a Telegram message with links to four files:
 
-- **[Sample Link 1 - Raw Tweets Digest](https://varunsharma.b-cdn.net/projects/n8n-workflow/Tweets_Digest_29_Oct_25_162057.html)**
-- **Link 2 (News Digest):** \[Placeholder for Sample Link 2 - Structured News Digest]
-- **Link 3 (Audio Broadcast):** \[Placeholder for Sample Link 3 - Audio Broadcast]
-- **Link 4 (YouTube Digest):** \[Placeholder for Sample Link 4 - YouTube Summary Digest]
+- **Link 1 - [Raw Tweets Digest](https://varunsharma.b-cdn.net/projects/n8n-workflow/Tweets_Digest_29_Oct_25_162057.html)**
+- **Link 2 - [News Digest](https://varunsharma.b-cdn.net/projects/n8n-workflow/News_Digest_29_Oct_25_162057.html)**
+- **Link 3 - [News MP3](https://varunsharma.b-cdn.net/projects/n8n-workflow/MP3_News_Digest_29_Oct_25_162057.mp3)**
+- **Link 4 - [YouTube News Digest](https://varunsharma.b-cdn.net/projects/n8n-workflow/YT_Digest_29_Oct_25_162349.html)**
 
-1.  **`Tweets_Digest.html` (Raw Tweets Digest):** An HTML page of all collected tweets, grouped by user. Includes an AI summary toggle and links back to the original posts.
+1.  **Raw Tweets Digest HTML:** An HTML page of all collected tweets, grouped by user. Includes an AI summary toggle and links back to the original posts.
 
-2.  **`News_Digest.html` (Structured News Digest):** A condensed HTML news report that groups related stories from multiple journalists into single items for fast reading.
+2.  **News Digest HTML:** A condensed HTML news report that groups related stories from multiple journalists into single items for fast reading.
 
-3.  **`MP3_News_Digest.mp3` (Audio Broadcast):** A 5-10 minute MP3 audio version of the Structured News Digest, perfect for listening on the go.
+3.  **News Broadcast MP3:** A 5-10 minute MP3 audio version of the Structured News Digest, perfect for listening on the go.
 
-4.  **`YT_Digest.html` (YouTube Summary Digest):** An HTML page with detailed AI summaries of the provided YouTube videos, preserving the speaker's key points.
-
-#### **\[PLACEHOLDER: Screenshot of the Telegram message received]**
+4.  **YouTube News Digest HTML:** An HTML page with detailed AI summaries of the provided YouTube videos, preserving the speaker's key points.
 
 ---
 
