@@ -1,0 +1,2267 @@
+{
+  "name": "➡️ My X News Scraper - New Combined Workflow",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        816,
+        4720
+      ],
+      "id": "7a0f1bef-6fc9-4ce1-91ff-847d7f5ce0cb",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "options": {
+          "timezone": "UTC"
+        }
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        1024,
+        4720
+      ],
+      "id": "41fb8430-37b1-4fb1-90b3-b538b2cf8d0b",
+      "name": "Date Today"
+    },
+    {
+      "parameters": {
+        "operation": "subtractFromDate",
+        "magnitude": "={{ $json.currentDate }}",
+        "duration": 1,
+        "outputFieldName": "yesterdayDate",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        4720
+      ],
+      "id": "761d9126-7323-4504-af6a-5ab15ff46031",
+      "name": "Date Yesterday"
+    },
+    {
+      "parameters": {
+        "operation": "formatDate",
+        "date": "={{ $('Date Today').item.json.currentDate }}",
+        "format": "X",
+        "outputFieldName": "nowUnix",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        1424,
+        4720
+      ],
+      "id": "7761ac82-4eaf-44e8-8913-c7f6a25819fe",
+      "name": "Unix Timestamp - Now"
+    },
+    {
+      "parameters": {
+        "operation": "formatDate",
+        "date": "={{ $('Date Yesterday').item.json.yesterdayDate }}",
+        "format": "X",
+        "outputFieldName": "yesterdayUnix",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        1648,
+        4720
+      ],
+      "id": "649a059d-550d-4e41-b6cd-9007f3e96754",
+      "name": "Unix Timestamp - Yesterday"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "users",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        768,
+        5248
+      ],
+      "id": "462e5f74-6a53-4f3c-b3ff-482b8158fd37",
+      "name": "Split Usernames"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.apify.com/v2/acts/kaitoeasyapi~twitter-x-data-tweet-scraper-pay-per-result-cheapest/runs",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"filter:blue_verified\": false,\n    \"filter:consumer_video\": false,\n    \"filter:has_engagement\": false,\n    \"filter:hashtags\": false,\n    \"filter:images\": false,\n    \"filter:links\": false,\n    \"filter:media\": false,\n    \"filter:mentions\": false,\n    \"filter:native_video\": false,\n    \"filter:nativeretweets\": false,\n    \"filter:news\": false,\n    \"filter:pro_video\": false,\n    \"filter:quote\": false,\n    \"filter:replies\": false,\n    \"filter:safe\": false,\n    \"filter:spaces\": false,\n    \"filter:twimg\": false,\n    \"filter:videos\": false,\n    \"filter:vine\": false,\n    \"from\": \"{{ $json.users }}\",\n    \"include:nativeretweets\": true,\n    \"lang\": \"en\",\n    \"since\": \"{{ $('Unix Timestamp - Yesterday').item.json.yesterdayUnix }}\",\n    \"until\": \"{{ $('Unix Timestamp - Now').item.json.nowUnix }}\"\n}\n\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        960,
+        5248
+      ],
+      "id": "95cde4c9-d38a-48db-98f6-e983bc499cf2",
+      "name": "Initiate Tweet Scraping",
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "LKlPICKUP6DTaRqd",
+          "name": "Apify Token"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://api.apify.com/v2/actor-runs/{{ $('Initiate Tweet Scraping').item.json.data.id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1376,
+        5248
+      ],
+      "id": "f9833043-7fdd-4151-b136-901c30094fc1",
+      "name": "Check Scraping Completion",
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "LKlPICKUP6DTaRqd",
+          "name": "Apify Token"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "90afbe4b-815e-4fc0-a7ce-111c542d8695",
+              "leftValue": "={{ $json.data.status }}",
+              "rightValue": "SUCCEEDED",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1616,
+        5248
+      ],
+      "id": "7347a229-ff5c-4d98-9504-42a9a5d2a8aa",
+      "name": "If Success"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.apify.com/v2/actor-runs/{{ $('Initiate Tweet Scraping').item.json.data.id }}/dataset/items",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1856,
+        5232
+      ],
+      "id": "8af65958-03f2-4e07-bc00-93c767d09238",
+      "name": "Get Scraped Tweets",
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "LKlPICKUP6DTaRqd",
+          "name": "Apify Token"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "d5312735-0eae-43d7-8c01-a4db60662116",
+              "leftValue": "={{ $json.text }}",
+              "rightValue": "KaitoEasyAPI",
+              "operator": {
+                "type": "string",
+                "operation": "notContains"
+              }
+            },
+            {
+              "id": "b901a396-cbaa-461c-a6a7-cf6006006318",
+              "leftValue": "={{ $json.url }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2080,
+        5232
+      ],
+      "id": "e38cfcbc-f2e5-4684-bcb1-bad85cae0ad7",
+      "name": "Check for Valid Tweets"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "144e3d45-bd85-4bcd-b6b2-b10d110a5340",
+              "name": "user",
+              "value": "={{ $('Split Usernames').item.json.users }}",
+              "type": "string"
+            },
+            {
+              "id": "8ffbaead-17ca-4142-a4bc-223d82e86a41",
+              "name": "twitterUrl",
+              "value": "={{ $json.twitterUrl }}",
+              "type": "string"
+            },
+            {
+              "id": "2ae235e7-a77c-416a-9062-364a4ade2ded",
+              "name": "tweetText",
+              "value": "={{ $json.text.replace(/\\\\n/g, '\\n').replace(/\\\\\"/g, '\"').replace(/\\\\\\\\/g, '\\\\') }}",
+              "type": "string"
+            },
+            {
+              "id": "75256cf0-edf8-4e73-a077-3fa8d7fa066f",
+              "name": "createdAt",
+              "value": "={{ $json.createdAt }}",
+              "type": "string"
+            },
+            {
+              "id": "8b974dc3-b86c-4e93-b3bc-6d847233cf24",
+              "name": "tweetSummary",
+              "value": "Not Available",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        816,
+        5504
+      ],
+      "id": "50c5db52-c099-48dc-a924-871906a12eb8",
+      "name": "Transform Data"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "e9bb3972-94de-423c-b2a1-3e2c68b147c3",
+              "leftValue": "={{ $json.tweetText.length }}",
+              "rightValue": 275,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1056,
+        5504
+      ],
+      "id": "86b3a5b2-cd6a-4334-9e49-bb21efe69682",
+      "name": "Check for Longer Tweets"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n\t\"summary\": \"ENTER SUMMARY HERE\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1424,
+        5664
+      ],
+      "id": "fb920eb2-e6c3-4c28-9c17-1b1ebd3e7fcc",
+      "name": "JSON Summary Parser"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.tweetText }}",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "# TASK\n\nYour task is to analyze the provided \"tweet_content\" and generate a concise, professional, and factually accurate summary.\n\n# Requirements\n\nBelow are the summary requirements:\n\n1.  **Length:** The summary must be a maximum of two (2) sentences.\n2.  **Focus:** The summary must capture the main topic, the author's primary claim or message, and any key context or criticism present in the full text.\n\n# Output Format\nYou must return the summary in a single JSON object with the key \"summary\".\n\n---\n\n# EXAMPLE\n\n**Example Input (JSON):**\n\"Trump yet again desperately tries to take credit on India-Pakistan Conflict Ceasefire,\\n\\n\\\"...We stopped a lot of these wars using trade. As an example, India and Pakistan were going at it really hard. Seven planes were shut down...Bad things were happening and I was talking to both of them about trade...I said we are not going to do a trade deal unless they stop the war. I got him on the phone and I said, listen, we're going to put a 200 % tariff on your country for any product you sell into the United States unless you stop this war...I spoke to the leaders of both nations. I like them both. But I said that's the way it is and I get a call the next day, we have decided to de-escalate...We have decided that we will not fight...I love stopping wars\"\n\n\n**Example Output (JSON):**\n{\n  \"summary\": \"In the tweet, Trump claims he single-handedly brokered a ceasefire between India and Pakistan by threatening trade sanctions, despite evidence suggesting otherwise. The user criticizes this claim as an \\\"EpicFail.\\\"\"\n}\n"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        1280,
+        5488
+      ],
+      "id": "69bc2b4c-b9f9-4fbe-98c5-c78f548ac0a1",
+      "name": "Gemini Summarization Call"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "144e3d45-bd85-4bcd-b6b2-b10d110a5340",
+              "name": "user",
+              "value": "={{ $('Transform Data').item.json.user }}",
+              "type": "string"
+            },
+            {
+              "id": "8ffbaead-17ca-4142-a4bc-223d82e86a41",
+              "name": "twitterUrl",
+              "value": "={{ $('Transform Data').item.json.twitterUrl }}",
+              "type": "string"
+            },
+            {
+              "id": "2ae235e7-a77c-416a-9062-364a4ade2ded",
+              "name": "tweetText",
+              "value": "={{ $('Transform Data').item.json.tweetText }}",
+              "type": "string"
+            },
+            {
+              "id": "75256cf0-edf8-4e73-a077-3fa8d7fa066f",
+              "name": "createdAt",
+              "value": "={{ $('Transform Data').item.json.createdAt }}",
+              "type": "string"
+            },
+            {
+              "id": "8b974dc3-b86c-4e93-b3bc-6d847233cf24",
+              "name": "tweetSummary",
+              "value": "={{ $json.output.summary.replace(/\\\\n/g, '\\n').replace(/\\\\\"/g, '\"').replace(/\\\\\\\\/g, '\\\\') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1616,
+        5488
+      ],
+      "id": "02ddd234-62f9-412c-bf5d-dc7d5e42a9d8",
+      "name": "Transform Data After LLM"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1856,
+        5504
+      ],
+      "id": "5b4ab066-53e6-4a18-a61a-d4ecbbddda18",
+      "name": "Append All User Tweets"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ JSON.stringify($('Aggregate Tweets').item.json.tweets) }}",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "# MISSION\n\nYour mission is to function as a highly specialized news processing engine. You will be given a JSON object containing raw tweets from Indian journalists, collected over the last 24 hours. Your primary objective is to transform this unstructured data into a structured, prioritized, and concise daily news digest in a **valid JSON format**. You must filter out all irrelevant noise, intelligently group related topics, synthesize them into clear news items, and cite the source tweets for each item.\n\n# PERSONA\n\nYou are to adopt the persona of a sharp, insightful Indian journalist who is a **Mother India loving nationalist**. This core identity dictates your editorial judgment. Your love for the nation guides your **selection and prioritization** of news. However, your unwavering commitment to journalistic integrity means that the final summaries you write must be **factually neutral, objective, and based strictly on the information provided in the source tweets.**\n\nThis means you will:\n1.  **Prioritize and Elevate:** News concerning India's national security, diplomatic maneuvers, and the official activities of its key leaders will always be featured first in the digest.\n2.  **Maintain Neutrality in Reporting:** The *content* of each news summary must remain unbiased. The nationalist lens applies to *what* you choose to report and in *what order*, not *how* you report the facts.\n\n# CORE DIRECTIVES & RULES\n\n1.  **Mandatory Keep List (Non-Negotiable):** You **MUST ALWAYS** retain any tweet that mentions the following entities, even if the tweet contains minimal information. These tweets will be retained as simple factual statements.\n    *   Prime Minister Narendra Modi\n    *   Home Minister Amit Shah\n    *   Defense Minister Rajnath Singh\n    *   The BJP (Bharatiya Janata Party)\n    *   Any news, statistics, or statements that positively portray or \"glorify\" India's global standing, economic progress, or cultural heritage.\n\n2.  **Strict Filtering:** You **MUST** filter out and completely ignore any tweets that are vague (i.e., just a headline or a link without a summary) **unless** they fall under the \"Mandatory Keep List.\" Additionally, filter out:\n    *   Retweets (RTs) that simply link to an article without adding significant commentary.\n    *   Tweets promoting TV shows, concerts, or other commercial events.\n    *   Superficial commentary on a link or video.\n\n3.  **Cross-User Topic Grouping & Source Collection:** The input data may group tweets by journalist, but your analysis must be topic-centric. You **MUST** identify and group tweets discussing the same news event even if they come from different journalists. During this grouping process, you **MUST** collect the `twitterUrl` of every source tweet that contributes to a single news item.\n\n4.  **Synthesize, Don't Staple:** When grouping multiple tweets on a single topic, intelligently synthesize the information into a single, coherent paragraph for the `news_content` field.\n\n5.  **Output Format is Non-Negotiable:** The final output **MUST BE A VALID JSON ARRAY OF OBJECTS AND NOTHING ELSE.** Do not include any introductory text, explanations, or Markdown code block markers like \\`\\`\\`json. Each object in the array must contain these four exact keys:\n    *   `news_number` (string, e.g., \"News 1\")\n    *   `news_title` (string, the headline)\n    *   `news_content` (string, the synthesized summary)\n    *   `news_sources` (an array of strings, containing the `twitterUrl`s of the original tweets)\n\n---\n\n# DETAILED WALKTHROUGH EXAMPLE\n\nHere is the complete, end-to-end walkthrough of how to process the sample data set, reflecting the JSON output requirement.\n\n### **Part 1: Full Input Data Example**\n\n```json\n{\n  \"tweets\": [\n    { \"twitterUrl\": \"https://twitter.com/AdityaRajKaul/status/1\", \"tweetText\": \"Look how Pakistan targeted civilians in Afghanistan...\", \"createdAt\": \"...\" },\n    { \"twitterUrl\": \"https://twitter.com/AdityaRajKaul/status/2\", \"tweetText\": \"Prime Minister @narendramodi at SreeSailam today...\", \"createdAt\": \"...\" },\n    { \"twitterUrl\": \"https://twitter.com/AdityaRajKaul/status/3\", \"tweetText\": \"RT @ndtv: 🔴#BREAKING | \\\\\\\"Priority To Safeguard National Interest\\\\\\\": India On Trump's Russia Oil Claim...\", \"createdAt\": \"...\" },\n    { \"twitterUrl\": \"https://twitter.com/AdityaRajKaul/status/4\", \"tweetText\": \"Big Statement from India supporting Taliban Govt on Pakistan-Afghanistan border clashes... India remains fully committed to the sovereignty... of Afghanistan.”\", \"createdAt\": \"...\" },\n    { \"twitterUrl\": \"https://twitter.com/AdityaRajKaul/status/5\", \"tweetText\": \"#BREAKING: India clarifies stand on Trump statement: “...I am not aware of any conversation yesterday between the two leaders...\\\\\\\\\\\\\\\" says MEA Spokesman...\", \"createdAt\": \"...\" },\n    { \"twitterUrl\": \"https://twitter.com/AdityaRajKaul/status/6\", \"tweetText\": \"This is the aftermath of Pakistan’s airstrikes on civilians in the Spin Boldak district... at least 20 Afghan civilians have been brutally killer...\", \"createdAt\": \"...\" },\n    { \"twitterUrl\": \"https://twitter.com/AdityaRajKaul/status/7\", \"tweetText\": \"The 3rd India-Central Asia meeting of the Secretaries of the Security Council... NSA Shri Ajit Doval participated...\", \"createdAt\": \"...\" },\n    { \"twitterUrl\": \"https://twitter.com/AdityaRajKaul/status/8\", \"tweetText\": \"From the forests of Abujhmad Maoist Central Committee member Kattapalli Vasudev alias Rupesh who made 150 Naxals surrender has sent an appeal...\", \"createdAt\": \"...\" },\n    { \"twitterUrl\": \"https://twitter.com/AdityaRajKaul/status/9\", \"tweetText\": \"RT @ndtvgoodtimes: One voice that defined generations... Sonu Nigam LIVE at Dal Lake...\", \"createdAt\": \"...\" },\n    { \"twitterUrl\": \"https://twitter.com/AdityaRajKaul/status/10\", \"tweetText\": \"Trump and Putin speaking since forever. Too lengthy...\", \"createdAt\": \"...\" },\n    { \"twitterUrl\": \"https://twitter.com/AdityaRajKaul/status/11\", \"tweetText\": \"US President Trump announces he and Russian President Vladimir Putin have agreed to meet in Budapest, Hungary...\", \"createdAt\": \"...\" },\n    { \"twitterUrl\": \"https://twitter.com/AdityaRajKaul/status/12\", \"tweetText\": \"#BREAKING: Russian President Putin told Trump in a phone call that potential Tomahawk missile supplies to Ukraine... will seriously damage US–Russia relations...\", \"createdAt\": \"...\" },\n    { \"twitterUrl\": \"https://twitter.com/AdityaRajKaul/status/13\", \"tweetText\": \"Trump’s New warning to Hamas Terror Group.\", \"createdAt\": \"...\" },\n    { \"twitterUrl\": \"https://twitter.com/AdityaRajKaul/status/14\", \"tweetText\": \"BIG: Indian Envoy to Indonesia @sandiplomat meets Mawlawi Sadullah Baloch, Charge D’affaires of the Afghan Taliban Embassy in Jakarta...\", \"createdAt\": \"...\" },\n    { \"twitterUrl\": \"https://twitter.com/AdityaRajKaul/status/15\", \"tweetText\": \"India’s clarity of thought on Pak-Afg crisis is loud and clear... India is fully committed to the territorial integrity and independence of Afghanistan”.\", \"createdAt\": \"...\" },\n    { \"twitterUrl\": \"https://twitter.com/AdityaRajKaul/status/16\", \"tweetText\": \"Ajay Banga, the President of the World Bank on India.\", \"createdAt\": \"...\" }\n  ]\n}\n```\n\n### **Part 2: Intermediate Step - Filtering Analysis**\n\n| Original Tweet (Snippet) | Rationale for Filtering | Action |\n| :--- | :--- | :--- |\n| `RT @ndtv...` (status/3) | Retweet/Link. | **FILTER OUT** |\n| `Prime Minister @narendramodi...` (status/2) | Mandatory Keep List. | **KEEP** |\n| `RT @ndtvgoodtimes...` (status/9) | Irrelevant entertainment. | **FILTER OUT** |\n| `Trump and Putin speaking...` (status/10) | Superficial commentary. | **FILTER OUT** |\n| `Trump’s New warning to Hamas...` (status/13) | Vague headline, NOT on Mandatory Keep List. | **FILTER OUT** |\n| `Ajay Banga...` (status/16) | Glorifies India. Mandatory Keep List. | **KEEP** |\n\n### **Part 3: Intermediate Step - Grouping & Source Collection**\n\n| Group/News Item | Source URLs | Key Focus |\n| :--- | :--- | :--- |\n| **India's Stance on Pak-Afg Crisis** | `status/4`, `status/15` | Combining India's official statements on the crisis. |\n| **Key Regional Security Dialogue** | `status/7` | NSA Doval's meeting in Bishkek. |\n| **MEA Clarification on US-India Relations** | `status/5` | MEA's statement on the Modi-Trump call. |\n| **Engagement with Afghanistan (Taliban)** | `status/14` | Indian Envoy's meeting in Jakarta. |\n| **Internal Security Success** | `status/8` | Maoist surrender appeal. |\n| **PM's Engagement** | `status/2` | PM Modi at SreeSailam. |\n| **World Bank View on India** | `status/16` | Ajay Banga's statement. |\n| **Pakistan Targets Civilians in Afghanistan** | `status/1`, `status/6` | Combining reports on civilian casualties from Pakistani strikes. |\n| **Trump-Putin Summit Planned** | `status/11`, `status/12` | Trump/Putin meeting and Putin's warning on missiles. |\n\n### **Part 4: Final Output Generation (JSON Format)**\n\n[\n  {\n    \"news_number\": \"News 1\",\n    \"news_title\": \"India's Stance on Pakistan-Afghanistan Crisis\",\n    \"news_content\": \"India took a strong and principled stand regarding the Pakistan-Afghanistan border clashes, stating it is closely monitoring the situation. New Delhi placed clear blame on Pakistan for hosting terrorist organizations and for trying to deflect from its own internal failures. India firmly reaffirmed its full commitment to the territorial integrity and independence of Afghanistan.\",\n    \"news_sources\": [\n      \"https://twitter.com/AdityaRajKaul/status/4\",\n      \"https://twitter.com/AdityaRajKaul/status/15\"\n    ]\n  },\n  {\n    \"news_number\": \"News 2\",\n    \"news_title\": \"Key Regional Security Dialogue\",\n    \"news_content\": \"National Security Advisor Shri Ajit Doval participated in the 3rd India-Central Asia meeting of Security Council Secretaries/NSAs held in Bishkek, Kyrgyz Republic. This dialogue included counterparts from Kazakhstan, Kyrgyzstan, and Uzbekistan, reinforcing crucial regional security cooperation.\",\n    \"news_sources\": [\n      \"https://twitter.com/AdityaRajKaul/status/7\"\n    ]\n  },\n  {\n    \"news_number\": \"News 3\",\n    \"news_title\": \"MEA Clarification on US-India Relations\",\n    \"news_content\": \"India’s Ministry of External Affairs (MEA) spokesman clarified the country's position regarding a recent statement by President Trump, stating he was 'unaware' of any phone conversation between Prime Minister Modi and President Trump yesterday.\",\n    \"news_sources\": [\n      \"https://twitter.com/AdityaRajKaul/status/5\"\n    ]\n  },\n  {\n    \"news_number\": \"News 4\",\n    \"news_title\": \"Engagement with Afghanistan (Taliban)\",\n    \"news_content\": \"India continues its diplomatic engagement; the Indian Ambassador to Indonesia met with the Charge D’affaires of the Afghan Taliban Embassy in Jakarta. Both officials highlighted the recent significant meeting between the foreign ministers of India and the Taliban.\",\n    \"news_sources\": [\n      \"https://twitter.com/AdityaRajKaul/status/14\"\n    ]\n  },\n  {\n    \"news_number\": \"News 5\",\n    \"news_title\": \"Internal Security Success\",\n    \"news_content\": \"In a significant development for national security, Kattapalli Vasudev (Rupesh), a former Maoist Central Committee member responsible for 150 previous Naxal surrenders, has sent an appeal to the remaining Maoists to contact him for a peaceful surrender under the Government of India’s policy.\",\n    \"news_sources\": [\n      \"https://twitter.com/AdityaRajKaul/status/8\"\n    ]\n  },\n  {\n    \"news_number\": \"News 6\",\n    \"news_title\": \"Prime Minister's Engagement\",\n    \"news_content\": \"Prime Minister Narendra Modi was present at SreeSailam today.\",\n    \"news_sources\": [\n      \"https://twitter.com/AdityaRajKaul/status/2\"\n    ]\n  },\n  {\n    \"news_number\": \"News 7\",\n    \"news_title\": \"World Bank View on India\",\n    \"news_content\": \"World Bank President Ajay Banga spoke on India.\",\n    \"news_sources\": [\n      \"https://twitter.com/AdityaRajKaul/status/16\"\n    ]\n  },\n  {\n    \"news_number\": \"News 8\",\n    \"news_title\": \"Pakistan Targets Civilians in Afghanistan\",\n    \"news_content\": \"Local residents and officials in Afghanistan’s Spin Boldak district report that Pakistani airstrikes allegedly targeted civilians, including children, resulting in at least 20 deaths and over 160 injuries.\",\n    \"news_sources\": [\n      \"https://twitter.com/AdityaRajKaul/status/1\",\n      \"https://twitter.com/AdityaRajKaul/status/6\"\n    ]\n  },\n  {\n    \"news_number\": \"News 9\",\n    \"news_title\": \"Trump-Putin Summit Planned\",\n    \"news_content\": \"US President Trump announced he and Russian President Vladimir Putin have agreed to meet in Budapest, Hungary, to attempt to end the conflict in Ukraine. Separately, the Kremlin confirmed Putin warned Trump that supplying Tomahawk missiles to Ukraine would seriously damage US-Russia relations.\",\n    \"news_sources\": [\n      \"https://twitter.com/AdityaRajKaul/status/11\",\n      \"https://twitter.com/AdityaRajKaul/status/12\"\n    ]\n  }\n]\n---\n### **SYSTEM PROMPT END**"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        2512,
+        5024
+      ],
+      "id": "09ff7c13-6d0c-4927-ac4c-26a5381c0c67",
+      "name": "Creating News Digest"
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "htmlBase64",
+        "options": {
+          "mimeType": "text/html"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        3248,
+        4640
+      ],
+      "id": "29be433b-e1e7-4ad7-af31-af68fcab7b2f",
+      "name": "Convert to HTML"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        2816,
+        5024
+      ],
+      "id": "301ea0d6-be8b-4b6d-9085-3f5f1cd90dec",
+      "name": "Gemini Flash 2.5",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "VhJFvo9m0T3ny5ek",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ JSON.stringify($('Creating News Digest').item.json.output) }}",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=# MISSION\n\nYour mission is to function as a professional broadcast scriptwriter. You will be given a structured JSON News Digest and your objective is to transform it into a single, polished text script. This script must be optimized for a basic Text-to-Speech (TTS) model to produce a natural, professional, and easily listenable radio news broadcast.\n\n# PERSONA\n\nAdopt the persona of a professional news anchor for a national broadcast, similar to one from All India Radio or Doordarshan News. Your tone should be authoritative, clear, confident, and engaging, but not overly dramatic. The script should be written in a way that is easy for an anchor to read with natural intonation and gravitas.\n\n# THE ART OF SCRIPTWRITING\n\n1.  **Rewrite for Audibility (Primary Directive):** Your most important task is to **rewrite and rephrase** the provided `news_content` to make it sound natural and conversational for a speaker. Do not simply copy the text. You must vary sentence structure, combine short, choppy sentences into more fluid ones, and use appropriate conjunctions (like 'however,' 'additionally,' 'meanwhile') to create a smooth narrative.\n\n2.  **Incorporate Natural Transitions:** To avoid a robotic, list-like delivery, you must weave in natural transitional phrases between news stories where appropriate. These bridges make the broadcast feel cohesive. Examples include:\n    *   \"In related news...\"\n    *   \"Meanwhile, on the domestic front...\"\n    *   \"Shifting our focus to diplomacy...\"\n    *   \"In another significant event...\"\n\n# CORE DIRECTIVES & RULES\n\n1.  **Factual Integrity is Paramount:** This is the most critical rule. While you will rewrite sentences for style, you **MUST NOT** alter, add, or remove any core facts, figures, names, locations, or the fundamental meaning of the news content. Your job is stylistic improvement for audio, not factual alteration.\n2.  **Input Source:** The input will be a JSON array of news items. You **MUST ignore** the `news_sources` field entirely.\n3.  **Output Format (Non-negotiable):** The final output **MUST be a valid JSON object with a single key-value pair**: `{\"script\": SCRIPT_STRING}`. Do not include any introductory text, explanations, or Markdown code block markers.\n4.  **Punctuation for TTS:** A critical formatting rule: **Always use a period after the news number and headline, never a colon.**\n    *   **Correct:** `News One. Pakistan Accused of Targeting Civilians in Afghanistan.`\n    *   **Incorrect:** `News One: Pakistan Accused of Targeting Civilians...`\n\n---\n\n# DETAILED WALKTHROUGH EXAMPLE\n\n### **Part 1: Input Data Example (JSON Digest)**\n\nYou will receive a JSON digest structured exactly like this, with sequential news items.\n\n```json\n[\n  {\n    \"news_number\": \"News 1\",\n    \"news_title\": \"Pakistan Accused of Targeting Civilians in Afghanistan\",\n    \"news_content\": \"Reports from Afghanistan's Spin Boldak district in Kandahar allege that Pakistan's airstrikes deliberately targeted civilians, including women, children, and the elderly. Local officials state that at least 20 Afghan civilians were killed and over 160 were wounded in these attacks.\"\n  },\n  {\n    \"news_number\": \"News 2\",\n    \"news_title\": \"Suicide Attack Kills Pakistani Troops Near Afghan Border\",\n    \"news_content\": \"Seven Pakistani soldiers were killed and 13 others injured in a suicide attack targeting a military camp in North Waziristan, near the Afghan border. This incident occurred amidst a fragile ceasefire between Pakistan and Afghanistan, following recent intense fighting.\"\n  },\n  {\n    \"news_number\": \"News 3\",\n    \"news_title\": \"India-Central Asia Security Dialogue Held in Bishkek\",\n    \"news_content\": \"The 3rd India-Central Asia meeting of Secretaries of Security Council / National Security Advisers took place in Bishkek, Kyrgyz Republic. India's NSA Ajit Doval attended, alongside counterparts from Kazakhstan, Kyrgyzstan, and Uzbekistan, underscoring continued regional security cooperation.\"\n  },\n  {\n    \"news_number\": \"News 4\",\n    \"news_title\": \"Maoist Leader Appeals for Peaceful Surrender\",\n    \"news_content\": \"Kattapalli Vasudev alias Rupesh, a Maoist Central Committee member credited with facilitating 150 Naxal surrenders, has issued an appeal for other Maoists to surrender peacefully. He encourages them to contact him to avail the Indian government's surrender policy.\"\n  }\n]\n```\n\n### **Part 2: Final Output Generation Example (JSON)**\n\nBelow is an example of a sample output.\n\n```json\n{\n\"script\": \"Welcome to the India First National News Digest for 2nd October 2025.\\n\\nOur top stories today cover regional security, diplomacy, and domestic affairs.\\n\\nNews One. Pakistan Accused of Targeting Civilians in Afghanistan. Disturbing reports are emerging from Afghanistan's Spin Boldak district in Kandahar, detailing alleged airstrikes by Pakistan that deliberately targeted civilians, including women, children, and the elderly. According to local officials, these attacks have resulted in the deaths of at least 20 Afghan civilians, with over 160 others wounded..\\n\\nIn related news, News Two. Suicide Attack Kills Pakistani Troops Near Afghan Border. A suicide attack targeting a military camp in North Waziristan, near the Afghan border, has left seven Pakistani soldiers dead and thirteen others injured. This incident occurred amidst a fragile ceasefire between Pakistan and Afghanistan, following a period of intense fighting..\\n\\nShifting our focus to diplomacy, News Three. India-Central Asia Security Dialogue Held in Bishkek. India continues to strengthen its regional ties. The third India-Central Asia meeting of National Security Advisers recently took place in Bishkek, the capital of the Kyrgyz Republic. India's National Security Advisor, Ajit Doval, was in attendance, alongside his counterparts from Kazakhstan, Kyrgyzstan, and Uzbekistan, in a move that underscores continued regional security cooperation..\\n\\nAnd on the domestic front, News Four. Maoist Leader Appeals for Peaceful Surrender. In a significant development for internal security, Maoist Central Committee member Kattapalli Vasudev, also known as Rupesh, has issued a public appeal for other Maoists to surrender peacefully. He is credited with already facilitating 150 Naxal surrenders and is encouraging others to contact him to take advantage of the Indian government's surrender policy.\\n\\nThat concludes this edition of the National News Digest. Thank you for listening.\"\n}\n```\n\n## Date\n\nUse today's date in the script: {{ $now.setZone('Asia/Kolkata').toFormat('dd LLL yyyy') }}"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        2464,
+        5472
+      ],
+      "id": "92553a94-4a16-4f86-8593-6bc672588ff2",
+      "name": "Prepare News TTS Script"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n\t\"type\": \"object\",\n\t\"description\": \"A container object holding a single text script or content block.\",\n\t\"properties\": {\n\t\t\"script\": {\n\t\t\t\"type\": \"string\",\n\t\t\t\"description\": \"The main text content, document, or script requested by the user.\"\n\t\t}\n\t},\n\t\"required\": [\n\t\t\"script\"\n\t]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        2608,
+        5648
+      ],
+      "id": "8bdf4941-6189-40e3-af5d-9e43b30c21d5",
+      "name": "Script JSON Schema"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n\t\"type\": \"array\",\n\t\"description\": \"A list of structured news articles.\",\n\t\"items\": {\n\t\t\"type\": \"object\",\n\t\t\"properties\": {\n\t\t\t\"news_number\": {\n\t\t\t\t\"type\": \"string\",\n\t\t\t\t\"description\": \"A sequential identifier for the news item (e.g., 'News 1').\"\n\t\t\t},\n\t\t\t\"news_title\": {\n\t\t\t\t\"type\": \"string\",\n\t\t\t\t\"description\": \"The title of the news article.\"\n\t\t\t},\n\t\t\t\"news_content\": {\n\t\t\t\t\"type\": \"string\",\n\t\t\t\t\"description\": \"The full text content of the news story.\"\n\t\t\t},\n\t\t\t\"news_sources\": {\n\t\t\t\t\"type\": \"array\",\n\t\t\t\t\"description\": \"A list of source URLs or references for the news.\",\n\t\t\t\t\"items\": {\n\t\t\t\t\t\"type\": \"string\"\n\t\t\t\t}\n\t\t\t}\n\t\t},\n\t\t\"required\": [\n\t\t\t\"news_number\",\n\t\t\t\"news_title\",\n\t\t\t\"news_content\",\n\t\t\t\"news_sources\"\n\t\t]\n\t}\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        2960,
+        5024
+      ],
+      "id": "e2b9f240-971a-4833-9477-0a3858a62989",
+      "name": "News Digest JSON Schema"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://queue.fal.run/fal-ai/playai/tts/v3",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "input",
+              "value": "={{ $json.output.script }}"
+            },
+            {
+              "name": "voice",
+              "value": "Navya (English (IN)/Indian)"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2784,
+        5472
+      ],
+      "id": "db2d6fce-7b0a-4da4-9285-bf620e0e9080",
+      "name": "FAL POST Request",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "VojbowsgJPWPNBal",
+          "name": "FAL API KEY"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.status_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2960,
+        5472
+      ],
+      "id": "0cd27c6c-5d94-4141-8dba-81536b81d024",
+      "name": "Fetch News Digest MP3 Status",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "VojbowsgJPWPNBal",
+          "name": "FAL API KEY"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "e24e01bb-8768-4375-9d60-705375de6f2e",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "COMPLETED",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        3168,
+        5472
+      ],
+      "id": "0f772c9a-1473-4793-9174-1075242d7144",
+      "name": "If MP3 Ready?"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.response_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3360,
+        5472
+      ],
+      "id": "07590f47-eb0a-48d6-b6b1-e6709f8f905d",
+      "name": "Get MP3 URL",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "VojbowsgJPWPNBal",
+          "name": "FAL API KEY"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.audio.url }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3552,
+        5472
+      ],
+      "id": "a899917b-3c23-4d09-9cd6-aba58e5f7a30",
+      "name": "Download News MP3 File"
+    },
+    {
+      "parameters": {
+        "operation": "upload",
+        "bucketName": "n8n-files",
+        "fileName": "=MP3_News_Digest_{{ $('Date for File Naming').item.json.date }}.mp3",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.s3",
+      "typeVersion": 1,
+      "position": [
+        3376,
+        5664
+      ],
+      "id": "e4c3bf79-4c92-47e3-b71f-833189758796",
+      "name": "Upload News MP3 to R2",
+      "credentials": {
+        "s3": {
+          "id": "TeZhP3TODWlG7YpW",
+          "name": "Cloudflare R2 API Keys"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3e8415a4-2f1a-41de-892d-a8e3e86dc527",
+              "name": "date",
+              "value": "={{ $now.setZone('Asia/Kolkata').toFormat('dd_LLL_yy_HHmmss') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2560,
+        4640
+      ],
+      "id": "f12aebde-0e27-47ea-a7ae-141f2bc5569f",
+      "name": "Date for File Naming"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Get the news data array from the 'Creating News Digest' node.\nconst newsItems = $('Creating News Digest').first().json.output;\n\n// 2. SERVER-SIDE RENDERING: Generate the static HTML for the table rows.\nlet tableRowsHtml = '';\n\nif (!newsItems || newsItems.length === 0) {\n    tableRowsHtml = '<tr><td class=\"pt-8 pb-4 px-8 text-center text-gray-500 dark:text-gray-400\">No news items to display.</td></tr>';\n} else {\n    tableRowsHtml = newsItems.map(item => {\n        // Prepare news content for splitting: remove escaped newlines and backslashes\n        let newsContent = (item.news_content || \"\")\n            .replace(/\\\\n/g, \" \")\n            // *** THIS IS THE CORRECTED LINE ***\n            .replace(/\\\\/g, \"\"); // Correct regex to find and remove a single backslash\n            \n        // Split the content into sentences, keeping the punctuation\n        const sentences = newsContent.split(/([.?!])\\s+/);\n\n        // Loop through and wrap each sentence in a <p> tag\n        let paragraphHtml = '';\n        let currentSentence = '';\n        \n        const spacingClass = \"mb-2\"; \n        \n        for (let i = 0; i < sentences.length; i++) {\n            let part = sentences[i].trim();\n            \n            if (part) {\n                if (part.match(/[.?!]/)) {\n                    paragraphHtml += `<p class=\"${spacingClass} dark:text-gray-300\">${currentSentence}${part}</p>`;\n                    currentSentence = '';\n                } else {\n                    currentSentence = part;\n                }\n            }\n        }\n        \n        if (currentSentence) {\n            paragraphHtml += `<p class=\"${spacingClass} dark:text-gray-300\">${currentSentence}</p>`;\n        }\n        \n        const sourcesHtml = (item.news_sources || [])\n            .map(\n              (sourceUrl, i) =>\n                `<a href=\"${sourceUrl}\" target=\"_blank\" class=\"text-teal-500 underline hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-600\">Source ${i + 1}</a>`\n            )\n            .join(', ');\n\n        // Return the complete HTML for a single table row\n        return `\n            <tr>\n              <!-- Mobile: Full-width container -->\n              <td class=\"py-2 px-0 sm:px-8 text-lg w-full\">\n                <div class=\"border border-gray-300 rounded-lg py-6 px-8 mb-4 bg-white dark:border-gray-600 dark:bg-gray-700\">\n                  \n                  <!-- Mobile: Centered title -->\n                  <h3 class=\"text-xl font-bold mb-2 text-gray-800 dark:text-gray-200 text-center sm:text-left\">${item.news_number}: ${item.news_title}</h3>\n                  \n                  <!-- STATIC PARAGRAPHS ARE INJECTED HERE -->\n                  ${paragraphHtml}\n                  \n                  ${sourcesHtml ? `<div class=\"mt-4 text-sm text-gray-600 dark:text-gray-300\">${sourcesHtml}</div>` : \"\"}\n                </div>\n              </td>\n            </tr>\n        `;\n    }).join('\\n');\n}\n\n\n// 3. Get the current date for the header.\nconst currentDateIso = new Date().toISOString();\n\n// 4. Assemble the complete HTML document, injecting the pre-rendered rows.\nconst completeHtml = `\n<!DOCTYPE html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <title>Daily News Digest</title>\n\n    <!-- Tailwind CSS CDN -->\n    <script src=\"https://cdn.tailwindcss.com\"><\\/script>\n    <script>\n      tailwind.config = { darkMode: \"class\", theme: { extend: {} } };\n    <\\/script>\n  </head>\n  <body class=\"bg-gray-50 font-sans dark:bg-gray-900 dark:text-gray-100\">\n    <div class=\"container mx-auto max-w-5xl p-8\">\n      <div class=\"flex justify-between items-center mb-8\">\n        <h1\n          id=\"main-header-date\"\n          class=\"text-3xl font-extrabold text-center text-white bg-gradient-to-r from-teal-500 to-blue-500 py-4 rounded-xl flex-grow mr-4 dark:from-teal-700 dark:to-blue-700\"\n        >\n          Daily News Digest\n        </h1>\n        <button\n          id=\"darkModeToggle\"\n          class=\"p-3 rounded-full bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-200 shadow-md hover:scale-105 transition-transform duration-200 ease-in-out\"\n          aria-label=\"Toggle dark mode\"\n        >\n          <svg id=\"sunIcon\" class=\"w-6 h-6\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M12 3v1m0 16v1m9-9h1M3 12h1m15.325-6.675l-.707-.707M6.675 18.325l-.707-.707M18.325 18.325l-.707.707M5.675 6.675l-.707.707M12 18a6 6 0 110-12 6 6 0 010 12z\"></path></svg>\n          <svg id=\"moonIcon\" class=\"w-6 h-6 hidden\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z\"></path></svg>\n        </button>\n      </div>\n      <div class=\"overflow-x-auto\">\n        <table class=\"min-w-full bg-white shadow-lg rounded-xl dark:bg-gray-800\">\n          <thead>\n            <tr>\n              <th class=\"sr-only\">News Content</th>\n            </tr>\n          </thead>\n          <tbody id=\"news-container\" class=\"pb-6\">\n            <!-- STATIC CONTENT IS INJECTED HERE -->\n            ${tableRowsHtml}\n          </tbody>\n        </table>\n      </div>\n      <p class=\"mt-6 text-gray-600 text-center text-lg dark:text-gray-400\">\n        END\n      </p>\n    </div>\n\n    <!-- Client-side script for interactivity -->\n    <script>\n      const mainHeaderDate = document.getElementById(\"main-header-date\");\n      const darkModeToggle = document.getElementById(\"darkModeToggle\");\n      const sunIcon = document.getElementById(\"sunIcon\");\n      const moonIcon = document.getElementById(\"moonIcon\");\n\n      // --- Dark Mode Logic (Unchanged) ---\n      function applyDarkMode(isDark) {\n        const htmlElement = document.documentElement;\n        if (isDark) {\n          htmlElement.classList.add(\"dark\");\n          sunIcon.classList.add(\"hidden\");\n          moonIcon.classList.remove(\"hidden\");\n        } else {\n          htmlElement.classList.remove(\"dark\");\n          sunIcon.classList.remove(\"hidden\");\n          moonIcon.classList.add(\"hidden\");\n        }\n      }\n      const savedTheme = localStorage.getItem(\"theme\");\n      applyDarkMode(savedTheme === \"dark\");\n      darkModeToggle.addEventListener(\"click\", () => {\n        const isCurrentlyDark = document.documentElement.classList.contains(\"dark\");\n        applyDarkMode(!isCurrentlyDark);\n        localStorage.setItem(\"theme\", isCurrentlyDark ? \"light\" : \"dark\");\n      });\n\n      // --- Date Formatting for Header (Unchanged) ---\n      function formatDateForHeader() {\n        const dateString = \"${currentDateIso}\";\n        try {\n            const date = new Date(dateString);\n            if (isNaN(date.getTime())) return \"DATE (IST)\";\n            const options = { timeZone: \"Asia/Kolkata\", day: \"numeric\", month: \"short\", year: \"numeric\" };\n            const formatter = new Intl.DateTimeFormat(\"en-GB\", options);\n            return \\`\\${formatter.format(date)} (IST)\\`;\n        } catch (e) {\n            console.error(\"Date formatting error:\", e);\n            return \"DATE (IST)\";\n        }\n      }\n\n      // --- Function to run on page load ---\n      function initializePage() {\n        mainHeaderDate.textContent = \\`Daily News Digest - \\${formatDateForHeader()}\\`;\n      }\n      \n      document.addEventListener(\"DOMContentLoaded\", initializePage);\n    <\\/script>\n  </body>\n</html>\n`;\n\n// 5. Output the result as a Base64 string.\nconst htmlBase64 = Buffer.from(completeHtml, 'utf8').toString('base64');\n\nreturn [\n    { \n        json: { \n            htmlBase64: htmlBase64 \n        } \n    }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3136,
+        5024
+      ],
+      "id": "0b32e3d3-0e82-4658-9777-3035eef11964",
+      "name": "Create News Digest HTML"
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "htmlBase64",
+        "options": {
+          "mimeType": "text/html"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        3328,
+        5024
+      ],
+      "id": "d5afb456-313b-4b9c-ad15-fc0c845e9280",
+      "name": "Convert to HTML - News Digest"
+    },
+    {
+      "parameters": {
+        "operation": "upload",
+        "bucketName": "n8n-files",
+        "fileName": "=News_Digest_{{ $('Date for File Naming').item.json.date }}.html",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.s3",
+      "typeVersion": 1,
+      "position": [
+        3536,
+        5024
+      ],
+      "id": "b117c74f-168f-4fb2-9a85-d84546ab3995",
+      "name": "Upload Tweets Digest to R",
+      "credentials": {
+        "s3": {
+          "id": "TeZhP3TODWlG7YpW",
+          "name": "Cloudflare R2 API Keys"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        2464,
+        5648
+      ],
+      "id": "ca20464c-4edd-40ef-8514-3a187f88aa65",
+      "name": "Gemini Flash 2.5 v2",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "VhJFvo9m0T3ny5ek",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1280,
+        5664
+      ],
+      "id": "834fcd25-dfa8-4e65-8edc-ec833e1e607f",
+      "name": "Gemini Flash 2.5 Lite",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "VhJFvo9m0T3ny5ek",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "7359224670",
+        "text": "=\nTwitter News Digest for {{ $now.setZone('Asia/Kolkata').toFormat('dd LLL yyyy; hh:mm a') }}.\n\nBelow are your links to the news:\n\n<a href=\"https://pub-e100d24983bf44cfae41774b3f0de324.r2.dev/Tweets_Digest_{{ $('Date for File Naming').item.json.date }}.html\">1. Twitter News Digest</a>\n<a href=\"https://pub-e100d24983bf44cfae41774b3f0de324.r2.dev/News_Digest_{{ $('Date for File Naming').item.json.date }}.html\">2. News Summary Digest</a>\n<a href=\"https://pub-e100d24983bf44cfae41774b3f0de324.r2.dev/MP3_News_Digest_{{ $('Date for File Naming').item.json.date }}.mp3\">3. News MP3</a>\n\n- Varun\n",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        3568,
+        5664
+      ],
+      "id": "cd3742b6-5447-4e0e-aa30-a897683dc4a7",
+      "name": "Send News Links on Telegram",
+      "webhookId": "895797ab-9546-40d2-847a-b7214f5f8cc2",
+      "credentials": {
+        "telegramApi": {
+          "id": "wNgQl2bEFT5ij95F",
+          "name": "Telegram n8n X News Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "upload",
+        "bucketName": "n8n-files",
+        "fileName": "=Tweets_Digest_{{ $('Date for File Naming').item.json.date }}.html",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.s3",
+      "typeVersion": 1,
+      "position": [
+        3520,
+        4640
+      ],
+      "id": "c72f3db1-38b5-486f-9e52-969d81beb531",
+      "name": "Upload Tweets Digest to R2.",
+      "credentials": {
+        "s3": {
+          "id": "TeZhP3TODWlG7YpW",
+          "name": "Cloudflare R2 API Keys"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "tweets",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        2080,
+        5504
+      ],
+      "id": "b0853fc8-8a05-4f77-9c01-94c1e48a9a18",
+      "name": "Aggregate Tweets"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Get the tweets data array from the \"Aggregate Tweets\" node.\nconst inputData = $('Aggregate Tweets').first().json.tweets;\n\n// 2. Serialize the JavaScript array into a JSON string for injection.\nconst inputDataJson = JSON.stringify(inputData, null, 2);\n\n\n// 3. Assemble the complete HTML document, injecting the serialized data.\nconst completeHtml = `\n<!DOCTYPE html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <title>Daily Posts Summary</title>\n\n    <script>\n      // *** THIS IS WHERE YOUR DATA IS INJECTED ***\n      const inputData = ${inputDataJson};\n\n      /**\n       * Transforms the flat inputData structure into the original grouped postsData structure.\n       * @param {Array} flatData - An array of post objects, each containing a 'user' field.\n       * @returns {Array} An array of user objects, each containing a 'tweets' array.\n       */\n      function input_data_transformation(flatData) {\n        const userMap = {};\n\n        // 1. Group the flat posts by username\n        flatData.forEach((post) => {\n          const username = post.user;\n\n          if (!userMap[username]) {\n            userMap[username] = {\n              user: username,\n              tweets: [],\n            };\n          }\n\n          const { user, ...tweetDetails } = post;\n          userMap[username].tweets.push(tweetDetails);\n        });\n\n        // 2. Convert the object map into the final array structure\n        const finalPostsData = Object.values(userMap);\n        \n        // Sort tweets within each user group by date ascending (Oldest first)\n        finalPostsData.forEach(userObject => {\n            userObject.tweets.sort((a, b) => {\n                return new Date(a.createdAt) - new Date(b.createdAt);\n            });\n        });\n\n        return finalPostsData;\n      }\n\n      // Convert the flat input data into the expected grouped postsData structure\n      const postsData = input_data_transformation(inputData);\n    <\\/script>\n\n    <!-- Initial script block for utility functions (unchanged) -->\n    <script type=\"text/javascript\">\n      var gk_isXlsx = false;\n      var gk_xlsxFileLookup = {};\n      var gk_fileData = {};\n      function filledCell(cell) {\n        return cell !== \"\" && cell != null;\n      }\n      function loadFileData(filename) {\n        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {\n          try {\n            var workbook = XLSX.read(gk_fileData[filename], { type: \"base64\" });\n            var firstSheetName = workbook.SheetNames[0];\n            var worksheet = workbook.Sheets[firstSheetName];\n            var jsonData = XLSX.utils.sheet_to_json(worksheet, {\n              header: 1,\n              blankrows: false,\n              defval: \"\",\n            });\n            var filteredData = jsonData.filter((row) => row.some(filledCell));\n            var headerRowIndex = filteredData.findIndex(\n              (row, index) =>\n                row.filter(filledCell).length >=\n                filteredData[index + 1]?.filter(filledCell).length\n            );\n            if (headerRowIndex === -1 || headerRowIndex > 25) {\n              headerRowIndex = 0;\n            }\n            var csv = XLSX.utils.aoa_to_sheet(\n              filteredData.slice(headerRowIndex)\n            );\n            csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });\n            return csv;\n          } catch (e) {\n            console.error(e);\n            return \"\";\n          }\n        }\n        return gk_fileData[filename] || \"\";\n      }\n    <\\/script>\n\n    <!-- Tailwind CSS CDN -->\n    <script src=\"https://cdn.tailwindcss.com\"><\\/script>\n    <script>\n      tailwind.config = { darkMode: \"class\", theme: { extend: {} } };\n    <\\/script>\n  </head>\n  <body class=\"bg-gray-50 font-sans dark:bg-gray-900 dark:text-gray-100\">\n    <div class=\"container mx-auto max-w-5xl p-8\">\n      <div class=\"flex justify-between items-center mb-8\">\n        <h1\n          id=\"main-header-date\"\n          class=\"text-3xl font-extrabold text-center text-white bg-gradient-to-r from-teal-500 to-blue-500 py-4 rounded-xl flex-grow mr-4 dark:from-teal-700 dark:to-blue-700\"\n        >\n          Daily Posts Summary\n        </h1>\n        <button\n          id=\"darkModeToggle\"\n          class=\"p-3 rounded-full bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-200 shadow-md hover:scale-105 transition-transform duration-200 ease-in-out\"\n          aria-label=\"Toggle dark mode\"\n        >\n          <svg id=\"sunIcon\" class=\"w-6 h-6\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M12 3v1m0 16v1m9-9h1M3 12h1m15.325-6.675l-.707-.707M6.675 18.325l-.707-.707M18.325 18.325l-.707.707M5.675 6.675l-.707.707M12 18a6 6 0 110-12 6 6 0 010 12z\"></path></svg>\n          <svg id=\"moonIcon\" class=\"w-6 h-6 hidden\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z\"></path></svg>\n        </button>\n      </div>\n      <div class=\"overflow-x-auto\">\n        <table\n          class=\"min-w-full bg-white shadow-lg rounded-xl dark:bg-gray-800\"\n        >\n          <thead>\n            <tr>\n              <th class=\"sr-only\">Post Content</th>\n            </tr>\n          </thead>\n          <tbody id=\"posts-container\" class=\"pb-6\"></tbody>\n        </table>\n      </div>\n      <p class=\"mt-6 text-gray-600 text-center text-lg dark:text-gray-400\">\n        END\n      </p>\n    </div>\n\n    <!-- Main application script -->\n    <script>\n      const postsContainer = document.getElementById(\"posts-container\");\n      const mainHeaderDate = document.getElementById(\"main-header-date\");\n      const darkModeToggle = document.getElementById(\"darkModeToggle\");\n      const sunIcon = document.getElementById(\"sunIcon\");\n      const moonIcon = document.getElementById(\"moonIcon\");\n\n      function applyDarkMode(isDark) {\n        const htmlElement = document.documentElement;\n        if (isDark) {\n          htmlElement.classList.add(\"dark\");\n          sunIcon.classList.add(\"hidden\");\n          moonIcon.classList.remove(\"hidden\");\n        } else {\n          htmlElement.classList.remove(\"dark\");\n          sunIcon.classList.remove(\"hidden\");\n          moonIcon.classList.add(\"hidden\");\n        }\n      }\n      const savedTheme = localStorage.getItem(\"theme\");\n      applyDarkMode(savedTheme === \"dark\");\n      darkModeToggle.addEventListener(\"click\", () => {\n        const isCurrentlyDark =\n          document.documentElement.classList.contains(\"dark\");\n        applyDarkMode(!isCurrentlyDark);\n        localStorage.setItem(\"theme\", isCurrentlyDark ? \"light\" : \"dark\");\n      });\n\n      function formatDateForHeader(dateString) {\n        try {\n          const d = new Date(dateString); \n          return isNaN(d.getTime())\n            ? \"Date N/A\"\n            : d.toLocaleDateString(\"en-US\", {\n                month: \"short\",\n                day: \"numeric\",\n                year: \"numeric\",\n              });\n        } catch (e) {\n          return \"Date N/A\";\n        }\n      }\n      function formatTimestamp(dateString) {\n        try {\n          const d = new Date(dateString);\n          return isNaN(d.getTime())\n            ? dateString\n            : new Intl.DateTimeFormat(\"en-US\", {\n                month: \"short\",\n                day: \"numeric\",\n                hour: \"numeric\",\n                minute: \"2-digit\",\n                hour12: true,\n              }).format(d);\n        } catch (e) {\n          console.error(\"Date format error:\", e);\n          return dateString;\n        }\n      }\n\n      function renderPosts() {\n        let latestDate = new Date(0); \n        postsData.forEach(userObject => {\n            userObject.tweets.forEach(post => {\n                const tweetDate = new Date(post.createdAt);\n                if (tweetDate > latestDate) {\n                    latestDate = tweetDate; \n                }\n            });\n        });\n\n        if (latestDate.getTime() > 0) {\n          const headerDate = formatDateForHeader(latestDate);\n          mainHeaderDate.textContent = \\`Daily Posts - \\${headerDate} (IST)\\`;\n        } else {\n          mainHeaderDate.textContent = \\`Daily Posts (No Data)\\`;\n        }\n\n        postsContainer.innerHTML = \"\";\n        let tweetIdCounter = 0;\n\n        postsData.forEach((userObject, userIndex) => {\n          // *** CHANGE 3: Center user header on mobile, left-align on larger screens ***\n          const userHeaderHtml = \\`<tr><td class=\"pt-8 pb-4 px-8 text-center sm:text-left\"><h2 class=\"text-2xl font-bold text-gray-800 dark:text-gray-200\">Posts by @\\${userObject.user}</h2></td></tr>\\`;\n          postsContainer.insertAdjacentHTML(\"beforeend\", userHeaderHtml);\n\n          userObject.tweets.forEach((post) => {\n            tweetIdCounter++;\n            const formattedTimestamp = formatTimestamp(post.createdAt);\n\n            const cleanTweetText = (post.tweetText || \"\")\n              .replace(/\\\\\\\\n/g, \"\\\\n\")\n              .replace(/\\\\\\\\/g, \"\\\\n\")\n              .replace(/\\\\n{3,}/g, \"\\\\n\\\\n\");\n\n            const cleanTweetSummary = (post.tweetSummary || \"\")\n              .replace(/\\\\\\\\n/g, \"\\\\n\")\n              .replace(/\\\\\\\\/g, \"\\\\n\")\n              .replace(/\\\\n{3,}/g, \"\\\\n\\\\n\");\n\n            const postHtml = \\`\n              <tr>\n                <!-- *** CHANGE 4: Remove horizontal padding on mobile, add it back on larger screens *** -->\n                <td class=\"py-2 px-0 sm:px-8 text-lg w-full\">\n                  <div id=\"cell-\\${tweetIdCounter}\" class=\"border border-gray-300 rounded-lg py-6 px-8 mb-2 bg-white dark:border-gray-600 dark:bg-gray-700\">\n                    <span class=\"tweet-text whitespace-pre-wrap dark:text-gray-200\" id=\"tweet-\\${tweetIdCounter}\">\\${\n              cleanTweetText.length > 280\n                ? cleanTweetText.substring(0, 280) + \"...\"\n                : cleanTweetText\n            }</span>\n                    <span class=\"tweet-full whitespace-pre-wrap dark:text-gray-200\" id=\"tweet-full-\\${tweetIdCounter}\" style=\"display: none;\">\\${cleanTweetText}</span>\n                    \\${\n                      cleanTweetText.length > 280\n                        ? \\`<br><a href=\"#\" class=\"text-sm text-purple-500 underline hover:text-purple-700 toggle-text dark:text-purple-400 dark:hover:text-purple-600\" data-tweet-id=\"\\${tweetIdCounter}\">Show More</a>\\`\n                        : \"\"\n                    }\n                    <div class=\"flex justify-between mt-4\">\n                      <details id=\"details-\\${tweetIdCounter}\"><summary class=\"text-sm text-teal-500 underline cursor-pointer hover:text-teal-700 pl-2 dark:text-teal-400 dark:hover:text-teal-600\">Summarize Tweet</summary></details>\n                      \\${\n                        post.twitterUrl\n                          ? \\`<a href=\"\\${post.twitterUrl}\" target=\"_blank\" class=\"text-sm text-teal-500 underline hover:text-teal-700 pr-2 dark:text-teal-400 dark:hover:text-teal-600\">Link to Original Tweet</a>\\`\n                          : \"\"\n                      }\n                    </div>\n                    <div class=\"mt-2\">\n                      <p id=\"summary-\\${tweetIdCounter}\" class=\"text-base text-gray-600 dark:text-gray-300\" style=\"display: none;\">\\${cleanTweetSummary}</p>\n                    </div>\n                    <div class=\"mt-4 text-sm text-gray-500 pl-2 dark:text-gray-400\">\\${formattedTimestamp}</div>\n                  </div>\n                </td>\n              </tr>\n            \\`;\n            postsContainer.insertAdjacentHTML(\"beforeend\", postHtml);\n          });\n\n          if (userIndex < postsData.length - 1) {\n            const separatorHtml = \\`<tr><td class=\"py-6 px-8\"><hr class=\"border-gray-300 dark:border-gray-600\" /></td></tr>\\`;\n            postsContainer.insertAdjacentHTML(\"beforeend\", separatorHtml);\n          }\n        });\n\n        document.querySelectorAll(\"details\").forEach((details) => {\n          details.removeEventListener(\"toggle\", handleDetailsToggle);\n          details.addEventListener(\"toggle\", handleDetailsToggle);\n        });\n      }\n\n      document.addEventListener(\"click\", (e) => {\n        if (e.target.classList.contains(\"toggle-text\")) {\n          e.preventDefault();\n          const button = e.target;\n          const tweetId = button.getAttribute(\"data-tweet-id\");\n          const shortText = document.getElementById(\\`tweet-\\${tweetId}\\`);\n          const fullText = document.getElementById(\\`tweet-full-\\${tweetId}\\`);\n          if (shortText.style.display === \"none\") {\n            shortText.style.display = \"inline\";\n            fullText.style.display = \"none\";\n            button.textContent = \"Show More\";\n          } else {\n            shortText.style.display = \"none\";\n            fullText.style.display = \"inline\";\n            button.textContent = \"Show Less\";\n          }\n        }\n      });\n\n      function handleDetailsToggle(e) {\n        const details = e.target;\n        const tweetId = details.id.split(\"-\")[1];\n        const cellContainer = document.getElementById(\\`cell-\\${tweetId}\\`);\n        const summaryElement = document.getElementById(\\`summary-\\${tweetId}\\`);\n        if (details.open) {\n          cellContainer.classList.add(\"bg-teal-50\", \"dark:bg-gray-600\");\n          summaryElement.style.display = \"block\";\n        } else {\n          cellContainer.classList.remove(\"bg-teal-50\", \"dark:bg-gray-600\");\n          summaryElement.style.display = \"none\";\n        }\n      }\n\n      document.addEventListener(\"DOMContentLoaded\", renderPosts);\n    <\\/script>\n  </body>\n</html>\n`;\n\n// 4. Output the result as a Base64 string.\nconst htmlBase64 = Buffer.from(completeHtml, 'utf8').toString('base64');\n\nreturn [\n    { \n        json: { \n            htmlBase64: htmlBase64 \n        } \n    }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2912,
+        4640
+      ],
+      "id": "347b734e-5b11-43b2-8513-f793c072ac52",
+      "name": "Prepare HTML Base64 for Tweets"
+    },
+    {
+      "parameters": {
+        "amount": 20
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1168,
+        5248
+      ],
+      "id": "6c1264c4-c090-44b2-ab94-e78b28decb98",
+      "name": "Wait - 20 sec",
+      "webhookId": "3e7aeb20-ba47-44ea-b853-9e49eb0d82e8"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "d5076b60-bcb8-4495-a0c3-4ec018977e14",
+              "leftValue": "={{ $json.users.length }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2096,
+        4720
+      ],
+      "id": "39102d4f-4e94-42e2-8e8a-062152dfebd0",
+      "name": "Run Tweets Digest"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "d5076b60-bcb8-4495-a0c3-4ec018977e14",
+              "leftValue": "={{ $('Add Videos & X Usernames').item.json.yt_videos.length }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        4192,
+        4624
+      ],
+      "id": "853d6351-62d0-446b-a0fe-608dba508ab4",
+      "name": "Run YouTube Digest"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.apify.com/v2/acts/scrape-creators~best-youtube-transcripts-scraper/runs",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"videoUrls\": {{ $('Extract URLs').item.json.URLs }}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4656,
+        4608
+      ],
+      "id": "36daf338-9f3d-4081-b0e4-466bf399368e",
+      "name": "Initiate YT Scraper",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Lk3ZxO9fyaMpwbIh",
+          "name": "Cerebras API"
+        },
+        "httpQueryAuth": {
+          "id": "LKlPICKUP6DTaRqd",
+          "name": "Apify Token"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 30
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2992,
+        5664
+      ],
+      "id": "b7381d10-2e1a-4e3d-b3e9-6fd6b2df8c14",
+      "name": "Wait - 30 secs",
+      "webhookId": "4d8ae81a-7f2d-4b50-8e0c-8fc8a24c37c5"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d6e8ff2f-2940-49dc-acc1-004071405519",
+              "name": "URLs",
+              "value": "={{ JSON.stringify($('Add Videos & X Usernames').item.json.yt_videos) }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        4432,
+        4608
+      ],
+      "id": "3e93a729-cbc8-42f6-a26b-2805daec5693",
+      "name": "Extract URLs"
+    },
+    {
+      "parameters": {
+        "amount": 20
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        4448,
+        4832
+      ],
+      "id": "118e2c5d-21a9-4145-825a-35a79121eab4",
+      "name": "Wait - 20 secs",
+      "webhookId": "879e3d14-d279-42a1-b281-78d5d49f27b7"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.apify.com/v2/actor-runs/{{ $('Initiate YT Scraper').item.json.data.id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4016,
+        4832
+      ],
+      "id": "8541847e-fde0-4758-83cd-67cebe6e082f",
+      "name": "Check YT Scraping Status",
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "LKlPICKUP6DTaRqd",
+          "name": "Apify Token"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "90afbe4b-815e-4fc0-a7ce-111c542d8695",
+              "leftValue": "={{ $('Check YT Scraping Status').item.json.data.status }}",
+              "rightValue": "SUCCEEDED",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        4240,
+        4832
+      ],
+      "id": "002d8298-4b72-4c15-ac9a-7d81bea15ed2",
+      "name": "Check Transcript Status"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.apify.com/v2/actor-runs/{{ $('Initiate YT Scraper').item.json.data.id }}/dataset/items",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4656,
+        4816
+      ],
+      "id": "a8bc08c6-3991-408a-824c-855279dc3a0d",
+      "name": "Get YT Transcripts",
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "LKlPICKUP6DTaRqd",
+          "name": "Apify Token"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a4a028ca-9ff2-4563-b4c8-8b15d92c8708",
+              "name": "video_title",
+              "value": "={{ $('Get YT Transcripts').item.json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "a72c098b-e364-4fe4-8e60-c31983fcb517",
+              "name": "url",
+              "value": "={{ $('Get YT Transcripts').item.json.url }}",
+              "type": "string"
+            },
+            {
+              "id": "40b2074d-0bd8-4bf0-b33d-bdcfc9ec77f4",
+              "name": "summary",
+              "value": "={{ $('Formatted Summary').item.json.output.formatted_summary.length < 20 ? 'NA' : $('Formatted Summary').item.json.output.formatted_summary }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        4560,
+        5184
+      ],
+      "id": "6923f0d7-2e25-4bd6-bfdf-2687588f7149",
+      "name": "Transform Transcript Data"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"transcript_summary\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\": [\"transcript_summary\"]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        4080,
+        5392
+      ],
+      "id": "e615aeb8-314f-4f56-9b61-abca15574d35",
+      "name": "Transcript Summary JSON"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        3936,
+        5392
+      ],
+      "id": "66be80f9-745f-42e4-bfb8-87384ef21034",
+      "name": "Gemini Flash 2.5 Lite v3",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "VhJFvo9m0T3ny5ek",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Get YT Transcripts').item.json.transcript_only_text }}",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "# MISSION\n\nYour mission is to transform a raw YouTube video transcript into a high-fidelity summary. The final output must be a clear, well-structured, and easily readable document that accurately captures the essential information and the speaker's unique perspective.\n\n# PERSONA & MINDSET\n\nYou will adopt the **mindset of an Intelligence Briefing Officer** while writing a clear and accessible **YouTube video summary**.\n\nYour intelligence training means you are an expert at identifying the most crucial information: the speaker's core thesis, their key arguments, and the specific evidence (names, numbers, dates, statistics) they use to support those arguments.\n\nHowever, your final output must be a standard, high-quality video summary written for a general audience, not a formal intelligence document.\n\n# CORE DIRECTIVES\n\n1.  **The Fidelity Mandate (Prime Directive):** Your primary goal is to **preserve the speaker's original viewpoint and the specific details they share.** Do not sanitize, neutralize, or water down their pro-India arguments or strong opinions. If the speaker is passionate or uses bold language (e.g., \"This was a diplomatic masterstroke\"), your summary of their point must reflect that authentic sentiment. The summary must be shorter than the transcript, but it must not lose the speaker's voice and perspective.\n\n2.  **Proportional Length:** The length and detail of your summary must be proportional to the complexity and length of the source transcript. A short, 10-minute video might have a concise summary with 3-4 key points. A dense, 30-minute analysis will require a more extensive summary with more key points to ensure no crucial arguments or details are lost. **When in doubt, err on the side of including a detail rather than omitting it.**\n\n3.  **Quote for Emphasis:** To add authenticity and preserve the speaker's unique perspective, it is highly recommended to **directly quote** their most impactful statements or conclusions. Use Markdown blockquote formatting (`>`) for this purpose.\n\n4.  **JSON Output (Non-Negotiable):** The final output **MUST BE A SINGLE, VALID JSON OBJECT AND NOTHING ELSE.** Do not include any introductory text, explanations. The JSON object must contain one key: `\"transcript_summary\"`. The value for this key will be a single string containing the complete summary.\n\n{ \"transcript_summary\" : SUMMARY }\n\n# OUTPUT FORMAT & INSTRUCTIONS\n\nYou must structure your output using the following format. Follow the instructions for each section precisely.\n\n- Summary / Overview\n(In this section, you must identify and state the speaker's single overarching thesis or the main argument they are making in the entire video. Answer the question: What is the core message they want the viewer to understand?)\n\n- Key Points\n(This is the most important section. Identify each distinct topic or argument the speaker makes to support their main thesis. For each key point, you must summarize the speaker's full perspective on that topic. Ensure you include the specific facts, statistics, historical context, examples, or anecdotes they used. Do not be overly brief here; capture the substance of their argument.)\n\n- End\n(Conclude with a brief, 1-2 sentence summary that restates the speaker's final takeaway, conclusion, or call to action.)\n\n\n---\n\n### **Final JSON Structure Example:**\n\n{\n  \"transcript_summary\": \"# Summary / Overview\\nThe speaker's central argument is that India's independent foreign policy is successfully navigating a complex multipolar world.\\n\\n## Key Points\\n**Topic: India's Relationship with Russia**\\nThe speaker's viewpoint is that India's continued engagement with Russia, particularly on energy and defense, is a pragmatic decision based on national interest, not a slight to the West. They cite the specific detail that India's oil imports from Russia increased by over 400% in the last fiscal year.\\n\\n**Topic: The QUAD and China**\\nThe speaker argues that India is the most critical member of the QUAD for containing Chinese aggression in the Indo-Pacific. They present the viewpoint that India's military strength and strategic location act as a significant deterrent.\\n\\n## End\\nThe speaker concludes that India is no longer a balancing power but has firmly established itself as a leading power in its own right.\"\n}\n"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        3936,
+        5184
+      ],
+      "id": "dfb89915-e6a3-4bf7-a5e7-edd79720f1f5",
+      "name": "Transcript Summary",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Transcript Summary').item.json.output.transcript_summary }}",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "# MISSION\n\nYour sole mission is to reformat a pre-written text summary for optimal web readability. You are a formatting tool, not a content editor. You will take an existing summary string and apply specific line-break rules to it while preserving its structural integrity.\n\n# PERSONA\n\nYou are a **Digital Typesetter**. Your function is purely technical: to apply specific formatting rules to an existing text. You do not write, edit, proofread, or alter the meaning of the content in any way.\n\n# THE GOLDEN RULE: DO NOT CHANGE THE CONTENT\n\nThis is the most important and non-negotiable rule. You are **strictly forbidden** from changing the substance of the text. This includes changing words, altering sentence order, or modifying headings and quotes. Your output must be substantively identical to the input, only differing in whitespace.\n\n# CORE FORMATTING LOGIC\n\n1.  **For Standard Paragraphs Only:** Apply the line break rule to improve scannability. Break down long paragraphs into smaller \"mini-paragraphs\" of one or two sentences each.\n2.  **Preserve Structural Blocks (CRITICAL):** This rule is more important than the one above. Markdown elements like list items (lines starting with `*`, `-`, or a number), blockquotes (`>`), and headings (`#`) must be treated as **single, indivisible blocks.**\n    *   You **MUST NOT** insert extra line breaks *within* these blocks, as it will destroy the formatting.\n    *   **Example of what NOT to do:**\n        *   **WRONG:**\n            ```\n            *   This is the first sentence of a bullet point.\n\n                This is the second sentence, now incorrectly outside the bullet.\n            ```\n        *   **CORRECT:**\n            ```\n            *   This is the first sentence of a bullet point. This is the second sentence, correctly kept within the same bullet point.\n            ```\n\n# OUTPUT FORMAT\n\nThe final output **MUST BE A SINGLE, VALID JSON OBJECT AND NOTHING ELSE.** The JSON object must contain one key: `\"formatted_summary\"`. The value for this key will be the complete, multi-line reformatted summary string.\n\n---\n# DETAILED EXAMPLE\n\n### **Input JSON Example:**\n```json\n{\n  \"transcript_summary\": \"# Summary / Overview\\nThe speaker's central argument is that India's independent foreign policy is successfully navigating a complex multipolar world, prioritizing its own national interests above all else.\\n\\n## Key Points\\n*   **Engagement with Russia:** The speaker's viewpoint is that India's continued engagement with Russia is a pragmatic decision. They cite that oil imports increased by over 400%, saving billions and ensuring energy security.\\n*   **The QUAD's Importance:** The speaker argues that India is the most critical member of the QUAD for containing China. Its military strength and strategic location act as a significant deterrent, which is a point often missed in Western analysis.\\n\\n## End\\nThe speaker concludes that India is no longer a balancing power but has firmly established itself as a leading power in its own right.\"\n}\n```\n\n### **Expected Output JSON:**\n```json\n{\n  \"formatted_summary\": \"# Summary / Overview\\nThe speaker's central argument is that India's independent foreign policy is successfully navigating a complex multipolar world, prioritizing its own national interests above all else.\\n\\n## Key Points\\n*   **Engagement with Russia:** The speaker's viewpoint is that India's continued engagement with Russia is a pragmatic decision. They cite that oil imports increased by over 400%, saving billions and ensuring energy security.\\n\\n*   **The QUAD's Importance:** The speaker argues that India is the most critical member of the QUAD for containing China. Its military strength and strategic location act as a significant deterrent, which is a point often missed in Western analysis.\\n\\n## End\\nThe speaker concludes that India is no longer a balancing power but has firmly established itself as a leading power in its own right.\"\n}\n```\n"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        4240,
+        5184
+      ],
+      "id": "82f6f474-2124-4d86-b452-d0fe6b8c7642",
+      "name": "Formatted Summary"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"formatted_summary\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\": [\"formatted_summary\"]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        4384,
+        5392
+      ],
+      "id": "4b4e63aa-a2d3-463b-85d6-9c2d708f51d2",
+      "name": "Formatted Summary JSON"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "summary_data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        4752,
+        5184
+      ],
+      "id": "8667c6c7-f5e3-4f79-a4de-ae06d132b597",
+      "name": "Aggregate Summary"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3e8415a4-2f1a-41de-892d-a8e3e86dc527",
+              "name": "date",
+              "value": "={{ $now.setZone('Asia/Kolkata').toFormat('dd_LLL_yy_HHmmss') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3952,
+        5712
+      ],
+      "id": "658584d3-d272-402c-82b5-90fb3f06d38b",
+      "name": "Date for File Naming YT"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Get the video summary data array from the \"Aggregate Summary\" node.\nconst videos = $('Aggregate Summary').first().json.summary_data;\n\n/**\n * Converts a summary string with custom markdown into a formatted HTML string.\n * This function runs on the server-side within the n8n node.\n * @param {string} summaryText - The raw summary text from your input.\n * @returns {string} - The formatted HTML string.\n */\nfunction renderMarkdown(summaryText) {\n    if (!summaryText) return '';\n\n    const lines = summaryText.split('\\n');\n    let html = '';\n    \n    // Tailwind class for consistent paragraph spacing (increased from mb-2 to mb-3)\n    const paragraphSpacingClass = \"mb-3\"; \n\n    for (const line of lines) {\n        let processedLine = line.trim();\n\n        // Create a paragraph break for empty lines (changed h-4 to h-2 for a smaller break)\n        if (processedLine === '') {\n            html += '<div class=\"h-2\"></div>'; // h-2 provides a small vertical space\n            continue;\n        }\n        \n        // Handle bolding (**text**) within the line first\n        processedLine = processedLine.replace(/\\*\\*(.*?)\\*\\*/g, '<strong>$1</strong>');\n\n        // Handle headings (#, ##, ###) - Now text-lg (18px) which is 1px larger than text-base (16px)\n        if (processedLine.startsWith('### ')) {\n            html += `<p class=\"text-lg font-bold underline ${paragraphSpacingClass}\">${processedLine.substring(4)}</p>`;\n        } else if (processedLine.startsWith('## ')) {\n            html += `<p class=\"text-lg font-bold underline ${paragraphSpacingClass}\">${processedLine.substring(3)}</p>`;\n        } else if (processedLine.startsWith('# ')) {\n            html += `<p class=\"text-lg font-bold underline ${paragraphSpacingClass}\">${processedLine.substring(2)}</p>`;\n        }\n        // Handle bullet points (* or -) as regular paragraphs (no custom bullet, no special alignment)\n        else if (processedLine.startsWith('* ')) {\n            html += `<p class=\"${paragraphSpacingClass}\">${processedLine.substring(2)}</p>`;\n        } else if (processedLine.startsWith('- ')) {\n            html += `<p class=\"${paragraphSpacingClass}\">${processedLine.substring(2)}</p>`;\n        }\n        // Handle regular paragraphs\n        else {\n            html += `<p class=\"${paragraphSpacingClass}\">${processedLine}</p>`;\n        }\n    }\n    return html;\n}\n\n// 2. SERVER-SIDE RENDERING: Generate the static HTML for the table rows.\nlet tableRowsHtml = '';\n\nif (!videos || videos.length === 0) {\n    tableRowsHtml = '<tr><td class=\"pt-8 pb-4 px-8 text-center text-gray-500 dark:text-gray-400\">No video summaries to display.</td></tr>';\n} else {\n    tableRowsHtml = videos.map(video => {\n        const summaryHtml = renderMarkdown(video.summary);\n\n        return `\n            <tr>\n              <!-- Mobile Responsiveness: No horizontal padding on mobile, added back on larger screens -->\n              <td class=\"py-2 px-0 sm:px-8 text-lg w-full\">\n                <div class=\"border border-gray-300 rounded-lg py-6 px-8 mb-4 bg-white dark:border-gray-600 dark:bg-gray-700\">\n                  \n                  <h3 class=\"text-xl font-bold mb-1 text-gray-800 dark:text-gray-200\">${video.video_title}</h3>\n                  \n                  <!-- URL: underline added here -->\n                  <p class=\"text-sm text-gray-500 underline dark:text-gray-400 mb-4\">${video.url}</p>\n\n                  <div class=\"text-base dark:text-gray-300\">\n                    ${summaryHtml}\n                  </div>\n\n                </div>\n              </td>\n            </tr>\n        `;\n    }).join('\\n');\n}\n\n\n// 3. Get the current date for the header.\nconst currentDateIso = new Date().toISOString();\n\n// 4. Assemble the complete HTML document, injecting the pre-rendered rows.\nconst completeHtml = `\n<!DOCTYPE html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <title>Video Summary Digest</title>\n\n    <!-- Tailwind CSS CDN -->\n    <script src=\"https://cdn.tailwindcss.com\"><\\/script>\n    <script>\n      tailwind.config = { darkMode: \"class\", theme: { extend: {} } };\n    <\\/script>\n  </head>\n  <body class=\"bg-gray-50 font-sans dark:bg-gray-900 dark:text-gray-100\">\n    <div class=\"container mx-auto max-w-5xl p-8\">\n      <div class=\"flex justify-between items-center mb-8\">\n        <h1\n          id=\"main-header-date\"\n          class=\"text-3xl font-extrabold text-center text-white bg-gradient-to-r from-teal-500 to-blue-500 py-4 rounded-xl flex-grow mr-4 dark:from-teal-700 dark:to-blue-700\"\n        >\n          Video Summary Digest\n        </h1>\n        <button\n          id=\"darkModeToggle\"\n          class=\"p-3 rounded-full bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-200 shadow-md hover:scale-105 transition-transform duration-200 ease-in-out\"\n          aria-label=\"Toggle dark mode\"\n        >\n          <svg id=\"sunIcon\" class=\"w-6 h-6\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M12 3v1m0 16v1m9-9h1M3 12h1m15.325-6.675l-.707-.707M6.675 18.325l-.707-.707M18.325 18.325l-.707.707M5.675 6.675l-.707.707M12 18a6 6 0 110-12 6 6 0 010 12z\"></path></svg>\n          <svg id=\"moonIcon\" class=\"w-6 h-6 hidden\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z\"></path></svg>\n        </button>\n      </div>\n      <div class=\"overflow-x-auto\">\n        <table class=\"min-w-full bg-white shadow-lg rounded-xl dark:bg-gray-800\">\n          <thead>\n            <tr>\n              <th class=\"sr-only\">Video Content</th>\n            </tr>\n          </thead>\n          <tbody id=\"videos-container\" class=\"pb-6\">\n            <!-- STATIC CONTENT IS INJECTED HERE -->\n            ${tableRowsHtml}\n          </tbody>\n        </table>\n      </div>\n      <p class=\"mt-6 text-gray-600 text-center text-lg dark:text-gray-400\">\n        END\n      </p>\n    </div>\n\n    <!-- Client-side script for interactivity -->\n    <script>\n      const mainHeaderDate = document.getElementById(\"main-header-date\");\n      const darkModeToggle = document.getElementById(\"darkModeToggle\");\n      const sunIcon = document.getElementById(\"sunIcon\");\n      const moonIcon = document.getElementById(\"moonIcon\");\n\n      function applyDarkMode(isDark) {\n        const htmlElement = document.documentElement;\n        if (isDark) {\n          htmlElement.classList.add(\"dark\");\n          sunIcon.classList.add(\"hidden\");\n          moonIcon.classList.remove(\"hidden\");\n        } else {\n          htmlElement.classList.remove(\"dark\");\n          sunIcon.classList.remove(\"hidden\");\n          moonIcon.classList.add(\"hidden\");\n        }\n      }\n      const savedTheme = localStorage.getItem(\"theme\");\n      applyDarkMode(savedTheme === \"dark\");\n      darkModeToggle.addEventListener(\"click\", () => {\n        const isCurrentlyDark = document.documentElement.classList.contains(\"dark\");\n        applyDarkMode(!isCurrentlyDark);\n        localStorage.setItem(\"theme\", isCurrentlyDark ? \"light\" : \"dark\");\n      });\n\n      function formatDateForHeader() {\n        const dateString = \"${currentDateIso}\";\n        try {\n            const date = new Date(dateString);\n            if (isNaN(date.getTime())) return \"DATE (IST)\";\n            const options = { timeZone: \"Asia/Kolkata\", day: \"numeric\", month: \"short\", year: \"numeric\" };\n            const formatter = new Intl.DateTimeFormat(\"en-GB\", options);\n            return \\`\\${formatter.format(date)} (IST)\\`;\n        } catch (e) {\n            console.error(\"Date formatting error:\", e);\n            return \"DATE (IST)\";\n        }\n      }\n\n      function initializePage() {\n        mainHeaderDate.textContent = \\`Video Summary Digest - \\${formatDateForHeader()}\\`;\n      }\n      \n      document.addEventListener(\"DOMContentLoaded\", initializePage);\n    <\\/script>\n  </body>\n</html>\n`;\n\n// 5. Output the result as a Base64 string in the required JSON format.\nconst htmlBase64 = Buffer.from(completeHtml, 'utf8').toString('base64');\n\nreturn [\n    { \n        json: { \n            htmlBase64: htmlBase64 \n        } \n    }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4160,
+        5712
+      ],
+      "id": "5a6a1f7f-8fd2-4ab4-90b7-541c5cb38551",
+      "name": "Create YT Digest HTML"
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "htmlBase64",
+        "options": {
+          "mimeType": "text/html"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        4368,
+        5712
+      ],
+      "id": "aefaf4a3-7909-4092-9ff0-2d97295cb520",
+      "name": "Convert to HTML - YT Digest"
+    },
+    {
+      "parameters": {
+        "operation": "upload",
+        "bucketName": "n8n-files",
+        "fileName": "=YT_Digest_{{ $('Date for File Naming YT').item.json.date }}.html",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.s3",
+      "typeVersion": 1,
+      "position": [
+        4576,
+        5696
+      ],
+      "id": "d6dd6f0a-dc6a-470e-8007-ddb189525b55",
+      "name": "Upload News Digest to R2",
+      "credentials": {
+        "s3": {
+          "id": "TeZhP3TODWlG7YpW",
+          "name": "Cloudflare R2 API Keys"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash-lite",
+        "options": {
+          "temperature": 0.3
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        4240,
+        5392
+      ],
+      "id": "f5ede629-b98c-4361-8642-8a75f4767bce",
+      "name": "Gemini Flash 2.5 Lite (Temp 0.3)",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "VhJFvo9m0T3ny5ek",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "7359224670",
+        "text": "=YT News Digest for {{ $now.setZone('Asia/Kolkata').toFormat('dd LLL yyyy; hh:mm a') }}.\n\nBelow are your links to the news:\n\n<a href=\"https://pub-e100d24983bf44cfae41774b3f0de324.r2.dev/YT_Digest_{{ $('Date for File Naming YT').item.json.date }}.html\">https://pub-e100d24983bf44cfae41774b3f0de324.r2.dev/YT_Digest_{{ $('Date for File Naming YT').item.json.date }}.html</a>\n\n",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        4768,
+        5696
+      ],
+      "id": "31b917ea-e5c7-4968-8c3e-82898d296d7d",
+      "name": "Send YT Digest on Telegram1",
+      "webhookId": "895797ab-9546-40d2-847a-b7214f5f8cc2",
+      "credentials": {
+        "telegramApi": {
+          "id": "wNgQl2bEFT5ij95F",
+          "name": "Telegram n8n X News Bot"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        4000,
+        4624
+      ],
+      "id": "511e7dbd-ab67-413e-b7dd-3bd6fb1f6e11",
+      "name": "No Operation, do nothing1"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "{\n  \"users\": [\"AdityaRajKaul\", \"Sidhant\"],\n  \"yt_videos\": [\"https://www.youtube.com/watch?v=BhtMdtv8UBg\", \"https://www.youtube.com/watch?v=a3Lg2_KQjRg\"]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1888,
+        4720
+      ],
+      "id": "b5557553-83d9-46f6-8805-c0af42d6a648",
+      "name": "Add Videos & X Usernames"
+    },
+    {
+      "parameters": {
+        "content": "# Step 0 - Initial Setup",
+        "height": 448,
+        "width": 1600,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        704,
+        4592
+      ],
+      "typeVersion": 1,
+      "id": "84483979-ef29-4a72-81d6-52731c123f8f",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "# Step 1 - Tweet Scraping & Formatting",
+        "height": 736,
+        "width": 1600,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        704,
+        5120
+      ],
+      "typeVersion": 1,
+      "id": "e0fa7ea1-af2e-4953-8b33-cc052c976a4c",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "# Step 2a - Preparing & Publishing X Digest",
+        "height": 272,
+        "width": 1376,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2384,
+        4544
+      ],
+      "typeVersion": 1,
+      "id": "ad70bb7b-b2b3-4ecd-8b50-e4ae5b7f7def",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "# Step 2b - Preparing & Publishing News Digest",
+        "height": 320,
+        "width": 1376,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2384,
+        4928
+      ],
+      "typeVersion": 1,
+      "id": "e81e10ab-d98e-4434-aef0-72c2f46d0f59",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "# Step 2c - Preparing & Publishing News Digest MP3",
+        "height": 544,
+        "width": 1376,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2384,
+        5344
+      ],
+      "typeVersion": 1,
+      "id": "3e3980d0-f1f5-4a6a-92c3-a24caa451928",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "# Step 3a - Scrape YouTube Transcripts",
+        "height": 464,
+        "width": 1088
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        3856,
+        4544
+      ],
+      "typeVersion": 1,
+      "id": "6e4b5dba-133e-4117-b31c-348099151758",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "content": "# Step 3b - Prepare YouTube News Digest",
+        "height": 448,
+        "width": 1088
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        3856,
+        5088
+      ],
+      "typeVersion": 1,
+      "id": "95686b2f-4ba0-4ee5-8f06-eb8f9dda3162",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "content": "# Step 3c - Publish YouTube News Digest",
+        "height": 272,
+        "width": 1088
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        3856,
+        5616
+      ],
+      "typeVersion": 1,
+      "id": "08ffd2d4-dc2c-42da-9b44-073b213c07f2",
+      "name": "Sticky Note7"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Date Today",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Date Today": {
+      "main": [
+        [
+          {
+            "node": "Date Yesterday",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Date Yesterday": {
+      "main": [
+        [
+          {
+            "node": "Unix Timestamp - Now",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Unix Timestamp - Now": {
+      "main": [
+        [
+          {
+            "node": "Unix Timestamp - Yesterday",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Unix Timestamp - Yesterday": {
+      "main": [
+        [
+          {
+            "node": "Add Videos & X Usernames",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Usernames": {
+      "main": [
+        [
+          {
+            "node": "Initiate Tweet Scraping",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Initiate Tweet Scraping": {
+      "main": [
+        [
+          {
+            "node": "Wait - 20 sec",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Scraping Completion": {
+      "main": [
+        [
+          {
+            "node": "If Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Success": {
+      "main": [
+        [
+          {
+            "node": "Get Scraped Tweets",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait - 20 sec",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Scraped Tweets": {
+      "main": [
+        [
+          {
+            "node": "Check for Valid Tweets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check for Valid Tweets": {
+      "main": [
+        [
+          {
+            "node": "Transform Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transform Data": {
+      "main": [
+        [
+          {
+            "node": "Check for Longer Tweets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check for Longer Tweets": {
+      "main": [
+        [
+          {
+            "node": "Gemini Summarization Call",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Append All User Tweets",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "JSON Summary Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Gemini Summarization Call",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini Summarization Call": {
+      "main": [
+        [
+          {
+            "node": "Transform Data After LLM",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transform Data After LLM": {
+      "main": [
+        [
+          {
+            "node": "Append All User Tweets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append All User Tweets": {
+      "main": [
+        [
+          {
+            "node": "Aggregate Tweets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Creating News Digest": {
+      "main": [
+        [
+          {
+            "node": "Create News Digest HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to HTML": {
+      "main": [
+        [
+          {
+            "node": "Upload Tweets Digest to R2.",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini Flash 2.5": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Creating News Digest",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Script JSON Schema": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Prepare News TTS Script",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "News Digest JSON Schema": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Creating News Digest",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare News TTS Script": {
+      "main": [
+        [
+          {
+            "node": "FAL POST Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "FAL POST Request": {
+      "main": [
+        [
+          {
+            "node": "Fetch News Digest MP3 Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch News Digest MP3 Status": {
+      "main": [
+        [
+          {
+            "node": "If MP3 Ready?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If MP3 Ready?": {
+      "main": [
+        [
+          {
+            "node": "Get MP3 URL",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait - 30 secs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get MP3 URL": {
+      "main": [
+        [
+          {
+            "node": "Download News MP3 File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download News MP3 File": {
+      "main": [
+        [
+          {
+            "node": "Upload News MP3 to R2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload News MP3 to R2": {
+      "main": [
+        [
+          {
+            "node": "Send News Links on Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Date for File Naming": {
+      "main": [
+        [
+          {
+            "node": "Prepare HTML Base64 for Tweets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create News Digest HTML": {
+      "main": [
+        [
+          {
+            "node": "Convert to HTML - News Digest",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to HTML - News Digest": {
+      "main": [
+        [
+          {
+            "node": "Upload Tweets Digest to R",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Tweets Digest to R": {
+      "main": [
+        [
+          {
+            "node": "Prepare News TTS Script",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini Flash 2.5 v2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Prepare News TTS Script",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini Flash 2.5 Lite": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Gemini Summarization Call",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Tweets Digest to R2.": {
+      "main": [
+        [
+          {
+            "node": "Creating News Digest",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send News Links on Telegram": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate Tweets": {
+      "main": [
+        [
+          {
+            "node": "Date for File Naming",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare HTML Base64 for Tweets": {
+      "main": [
+        [
+          {
+            "node": "Convert to HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait - 20 sec": {
+      "main": [
+        [
+          {
+            "node": "Check Scraping Completion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run Tweets Digest": {
+      "main": [
+        [
+          {
+            "node": "Split Usernames",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Initiate YT Scraper": {
+      "main": [
+        [
+          {
+            "node": "Check YT Scraping Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait - 30 secs": {
+      "main": [
+        [
+          {
+            "node": "Fetch News Digest MP3 Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run YouTube Digest": {
+      "main": [
+        [
+          {
+            "node": "Extract URLs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract URLs": {
+      "main": [
+        [
+          {
+            "node": "Initiate YT Scraper",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait - 20 secs": {
+      "main": [
+        [
+          {
+            "node": "Check YT Scraping Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check YT Scraping Status": {
+      "main": [
+        [
+          {
+            "node": "Check Transcript Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Transcript Status": {
+      "main": [
+        [
+          {
+            "node": "Get YT Transcripts",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait - 20 secs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get YT Transcripts": {
+      "main": [
+        [
+          {
+            "node": "Transcript Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcript Summary JSON": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Transcript Summary",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini Flash 2.5 Lite v3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Transcript Summary",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcript Summary": {
+      "main": [
+        [
+          {
+            "node": "Formatted Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formatted Summary JSON": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Formatted Summary",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formatted Summary": {
+      "main": [
+        [
+          {
+            "node": "Transform Transcript Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transform Transcript Data": {
+      "main": [
+        [
+          {
+            "node": "Aggregate Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate Summary": {
+      "main": [
+        [
+          {
+            "node": "Date for File Naming YT",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create YT Digest HTML": {
+      "main": [
+        [
+          {
+            "node": "Convert to HTML - YT Digest",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Date for File Naming YT": {
+      "main": [
+        [
+          {
+            "node": "Create YT Digest HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to HTML - YT Digest": {
+      "main": [
+        [
+          {
+            "node": "Upload News Digest to R2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini Flash 2.5 Lite (Temp 0.3)": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Formatted Summary",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload News Digest to R2": {
+      "main": [
+        [
+          {
+            "node": "Send YT Digest on Telegram1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "No Operation, do nothing1": {
+      "main": [
+        [
+          {
+            "node": "Run YouTube Digest",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add Videos & X Usernames": {
+      "main": [
+        [
+          {
+            "node": "Run Tweets Digest",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "a32c535a-c05c-4638-bc86-9e8622591a9c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "fb424d8a761063d326f194b129dacfbe27095cc76499664708c7441bdc9ecc9e"
+  },
+  "id": "PLapeT2Q6NTLUBcs",
+  "tags": []
+}

@@ -1,0 +1,339 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Daily News Digest</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com" nonce="MTMzOTM5MjY0Nyw0MzkyODgzMzQ="></script>
+    <script nonce="MTMzOTM5MjY0Nyw0MzkyODgzMzQ=">
+      tailwind.config = { darkMode: "class", theme: { extend: {} } };
+    </script>
+  </head>
+  <body class="bg-gray-50 font-sans dark:bg-gray-900 dark:text-gray-100">
+    <div class="container mx-auto max-w-5xl p-8">
+      <div class="flex justify-between items-center mb-8">
+        <h1
+          id="main-header-date"
+          class="text-3xl font-extrabold text-center text-white bg-gradient-to-r from-teal-500 to-blue-500 py-4 rounded-xl flex-grow mr-4 dark:from-teal-700 dark:to-blue-700"
+        >
+          Daily News Digest
+        </h1>
+        <button
+          id="darkModeToggle"
+          class="p-3 rounded-full bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-200 shadow-md hover:scale-105 transition-transform duration-200 ease-in-out"
+          aria-label="Toggle dark mode"
+        >
+          <svg id="sunIcon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h1M3 12h1m15.325-6.675l-.707-.707M6.675 18.325l-.707-.707M18.325 18.325l-.707.707M5.675 6.675l-.707.707M12 18a6 6 0 110-12 6 6 0 010 12z"></path></svg>
+          <svg id="moonIcon" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+        </button>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="min-w-full bg-white shadow-lg rounded-xl dark:bg-gray-800">
+          <thead>
+            <tr>
+              <th class="sr-only">News Content</th>
+            </tr>
+          </thead>
+          <tbody id="news-container" class="pb-6">
+            <!-- STATIC CONTENT IS INJECTED HERE -->
+            
+            <tr>
+              <!-- Mobile: Full-width container -->
+              <td class="py-2 px-0 sm:px-8 text-lg w-full">
+                <div class="border border-gray-300 rounded-lg py-6 px-8 mb-4 bg-white dark:border-gray-600 dark:bg-gray-700">
+                  
+                  <!-- Mobile: Centered title -->
+                  <h3 class="text-xl font-bold mb-2 text-gray-800 dark:text-gray-200 text-center sm:text-left">News 1: President Droupadi Murmu Soars in Rafale Jet</h3>
+                  
+                  <!-- STATIC PARAGRAPHS ARE INJECTED HERE -->
+                  <p class="mb-2 dark:text-gray-300">President Smt.</p><p class="mb-2 dark:text-gray-300">Droupadi Murmu made history by undertaking a sortie in a Rafale aircraft at Air Force Station, Ambala.</p><p class="mb-2 dark:text-gray-300">This flight marks her as the first President of India to experience flying in two different types of Indian Air Force fighter jets, having previously flown in a Sukhoi 30 MKI in 2023.</p>
+                  
+                  <div class="mt-4 text-sm text-gray-600 dark:text-gray-300"><a href="https://twitter.com/AdityaRajKaul/status/1983440095278670011" target="_blank" class="text-teal-500 underline hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-600">Source 1</a>, <a href="https://twitter.com/sidhant/status/1983444875468288266" target="_blank" class="text-teal-500 underline hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-600">Source 2</a>, <a href="https://twitter.com/AdityaRajKaul/status/1983231216636854682" target="_blank" class="text-teal-500 underline hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-600">Source 3</a>, <a href="https://twitter.com/sidhant/status/1983139025046081727" target="_blank" class="text-teal-500 underline hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-600">Source 4</a></div>
+                </div>
+              </td>
+            </tr>
+        
+
+            <tr>
+              <!-- Mobile: Full-width container -->
+              <td class="py-2 px-0 sm:px-8 text-lg w-full">
+                <div class="border border-gray-300 rounded-lg py-6 px-8 mb-4 bg-white dark:border-gray-600 dark:bg-gray-700">
+                  
+                  <!-- Mobile: Centered title -->
+                  <h3 class="text-xl font-bold mb-2 text-gray-800 dark:text-gray-200 text-center sm:text-left">News 2: India and Nepal Boost Power Sector Cooperation</h3>
+                  
+                  <!-- STATIC PARAGRAPHS ARE INJECTED HERE -->
+                  <p class="mb-2 dark:text-gray-300">India and Nepal have significantly strengthened their cooperation in the power sector.</p><p class="mb-2 dark:text-gray-300">Nepalese Minister of Energy, Kulman Ghising, met with India's Union Minister Manohar Lal, leading to the signing of key agreements between POWERGRID and the Nepal Electricity Authority (NEA).</p><p class="mb-2 dark:text-gray-300">These agreements facilitate the implementation of major cross-border transmission systems, including the Inaruwa (Nepal) - New Purnea (India) 400 kV and Lamki (Dododhara) (Nepal) - Bareilly (India) 400kV systems, enhancing regional grid connectivity.</p>
+                  
+                  <div class="mt-4 text-sm text-gray-600 dark:text-gray-300"><a href="https://twitter.com/AdityaRajKaul/status/1983457636541411418" target="_blank" class="text-teal-500 underline hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-600">Source 1</a></div>
+                </div>
+              </td>
+            </tr>
+        
+
+            <tr>
+              <!-- Mobile: Full-width container -->
+              <td class="py-2 px-0 sm:px-8 text-lg w-full">
+                <div class="border border-gray-300 rounded-lg py-6 px-8 mb-4 bg-white dark:border-gray-600 dark:bg-gray-700">
+                  
+                  <!-- Mobile: Centered title -->
+                  <h3 class="text-xl font-bold mb-2 text-gray-800 dark:text-gray-200 text-center sm:text-left">News 3: India-China Border Talks Conclude with Focus on Stability</h3>
+                  
+                  <!-- STATIC PARAGRAPHS ARE INJECTED HERE -->
+                  <p class="mb-2 dark:text-gray-300">The 23rd round of corps commander-level talks between India and China on the western sector of the border was held at the Moldo-Chushul border meeting point.</p><p class="mb-2 dark:text-gray-300">Both sides agreed to continue utilizing existing mechanisms to resolve any ground issues and maintain stability along the border.</p>
+                  
+                  <div class="mt-4 text-sm text-gray-600 dark:text-gray-300"><a href="https://twitter.com/Sidhant/status/1983362047069864339" target="_blank" class="text-teal-500 underline hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-600">Source 1</a>, <a href="https://twitter.com/Sidhant/status/1983403897378271313" target="_blank" class="text-teal-500 underline hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-600">Source 2</a></div>
+                </div>
+              </td>
+            </tr>
+        
+
+            <tr>
+              <!-- Mobile: Full-width container -->
+              <td class="py-2 px-0 sm:px-8 text-lg w-full">
+                <div class="border border-gray-300 rounded-lg py-6 px-8 mb-4 bg-white dark:border-gray-600 dark:bg-gray-700">
+                  
+                  <!-- Mobile: Centered title -->
+                  <h3 class="text-xl font-bold mb-2 text-gray-800 dark:text-gray-200 text-center sm:text-left">News 4: PM Modi Congratulates Japan's New Prime Minister</h3>
+                  
+                  <!-- STATIC PARAGRAPHS ARE INJECTED HERE -->
+                  <p class="mb-2 dark:text-gray-300">Prime Minister Narendra Modi spoke with the newly appointed Prime Minister of Japan, Sanae Takaichi, to extend his congratulations on assuming office.</p>
+                  
+                  <div class="mt-4 text-sm text-gray-600 dark:text-gray-300"><a href="https://twitter.com/AdityaRajKaul/status/1983465385686168058" target="_blank" class="text-teal-500 underline hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-600">Source 1</a></div>
+                </div>
+              </td>
+            </tr>
+        
+
+            <tr>
+              <!-- Mobile: Full-width container -->
+              <td class="py-2 px-0 sm:px-8 text-lg w-full">
+                <div class="border border-gray-300 rounded-lg py-6 px-8 mb-4 bg-white dark:border-gray-600 dark:bg-gray-700">
+                  
+                  <!-- Mobile: Centered title -->
+                  <h3 class="text-xl font-bold mb-2 text-gray-800 dark:text-gray-200 text-center sm:text-left">News 5: IIT Kanpur Cloud Seeding Trials Show Air Quality Improvement</h3>
+                  
+                  <!-- STATIC PARAGRAPHS ARE INJECTED HERE -->
+                  <p class="mb-2 dark:text-gray-300">IIT Kanpur has temporarily halted its cloud-seeding efforts due to insufficient moisture.</p><p class="mb-2 dark:text-gray-300">However, previous trials provided valuable data, indicating a measurable reduction in PM2.5 and PM10 concentrations by 6-10%</p><p class="mb-2 dark:text-gray-300">.</p><p class="mb-2 dark:text-gray-300">This suggests that even with limited moisture, cloud seeding can contribute to improved air quality in the National Capital Region, reinforcing IIT Kanpur's commitment to environmental research.</p>
+                  
+                  <div class="mt-4 text-sm text-gray-600 dark:text-gray-300"><a href="https://twitter.com/AdityaRajKaul/status/1983419407562166417" target="_blank" class="text-teal-500 underline hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-600">Source 1</a>, <a href="https://twitter.com/AdityaRajKaul/status/1983238803642097836" target="_blank" class="text-teal-500 underline hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-600">Source 2</a></div>
+                </div>
+              </td>
+            </tr>
+        
+
+            <tr>
+              <!-- Mobile: Full-width container -->
+              <td class="py-2 px-0 sm:px-8 text-lg w-full">
+                <div class="border border-gray-300 rounded-lg py-6 px-8 mb-4 bg-white dark:border-gray-600 dark:bg-gray-700">
+                  
+                  <!-- Mobile: Centered title -->
+                  <h3 class="text-xl font-bold mb-2 text-gray-800 dark:text-gray-200 text-center sm:text-left">News 6: Donald Trump Claims Credit for Halting India-Pakistan Conflict</h3>
+                  
+                  <!-- STATIC PARAGRAPHS ARE INJECTED HERE -->
+                  <p class="mb-2 dark:text-gray-300">Former US President Donald Trump has recounted a narrative where he claims to have single-handedly de-escalated tensions between India and Pakistan by leveraging trade deals.</p><p class="mb-2 dark:text-gray-300">He stated that he spoke to both Prime Minister Modi and the Prime Minister of Pakistan, threatening to withhold trade if conflict ensued, leading to a resolution within two days.</p>
+                  
+                  <div class="mt-4 text-sm text-gray-600 dark:text-gray-300"><a href="https://twitter.com/AdityaRajKaul/status/1983412303501635759" target="_blank" class="text-teal-500 underline hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-600">Source 1</a>, <a href="https://twitter.com/Sidhant/status/1983403723633373492" target="_blank" class="text-teal-500 underline hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-600">Source 2</a>, <a href="https://twitter.com/Sidhant/status/1983166385019813932" target="_blank" class="text-teal-500 underline hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-600">Source 3</a>, <a href="https://twitter.com/Sidhant/status/1983353847398441297" target="_blank" class="text-teal-500 underline hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-600">Source 4</a></div>
+                </div>
+              </td>
+            </tr>
+        
+
+            <tr>
+              <!-- Mobile: Full-width container -->
+              <td class="py-2 px-0 sm:px-8 text-lg w-full">
+                <div class="border border-gray-300 rounded-lg py-6 px-8 mb-4 bg-white dark:border-gray-600 dark:bg-gray-700">
+                  
+                  <!-- Mobile: Centered title -->
+                  <h3 class="text-xl font-bold mb-2 text-gray-800 dark:text-gray-200 text-center sm:text-left">News 7: Israel-Hamas Ceasefire Enforced Amid Renewed Strikes</h3>
+                  
+                  <!-- STATIC PARAGRAPHS ARE INJECTED HERE -->
+                  <p class="mb-2 dark:text-gray-300">The Israel Defense Forces (IDF) announced the renewed enforcement of a ceasefire with Hamas, citing violations by the latter.</p><p class="mb-2 dark:text-gray-300">The IDF reported striking over 30 terrorists in command positions within Gaza.</p><p class="mb-2 dark:text-gray-300">Israel's Prime Minister Netanyahu has ordered "immediate and powerful strikes" in the Gaza Strip following security consultations, indicating a potential escalation after Hamas allegedly violated the truce by mistreating a hostage's remains.</p>
+                  
+                  <div class="mt-4 text-sm text-gray-600 dark:text-gray-300"><a href="https://twitter.com/AdityaRajKaul/status/1983450288687329528" target="_blank" class="text-teal-500 underline hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-600">Source 1</a>, <a href="https://twitter.com/AdityaRajKaul/status/1983208193359478810" target="_blank" class="text-teal-500 underline hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-600">Source 2</a>, <a href="https://twitter.com/AdityaRajKaul/status/1983264735350104338" target="_blank" class="text-teal-500 underline hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-600">Source 3</a>, <a href="https://twitter.com/AdityaRajKaul/status/1983235477596713340" target="_blank" class="text-teal-500 underline hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-600">Source 4</a>, <a href="https://twitter.com/Sidhant/status/1983213831389167709" target="_blank" class="text-teal-500 underline hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-600">Source 5</a></div>
+                </div>
+              </td>
+            </tr>
+        
+
+            <tr>
+              <!-- Mobile: Full-width container -->
+              <td class="py-2 px-0 sm:px-8 text-lg w-full">
+                <div class="border border-gray-300 rounded-lg py-6 px-8 mb-4 bg-white dark:border-gray-600 dark:bg-gray-700">
+                  
+                  <!-- Mobile: Centered title -->
+                  <h3 class="text-xl font-bold mb-2 text-gray-800 dark:text-gray-200 text-center sm:text-left">News 8: India Debunks Pakistani and Al Jazeera Propaganda Regarding Sq. Ldr. Shivangi Singh</h3>
+                  
+                  <!-- STATIC PARAGRAPHS ARE INJECTED HERE -->
+                  <p class="mb-2 dark:text-gray-300">India's Rashtrapati Bhawan has released a photograph showing Sq.</p><p class="mb-2 dark:text-gray-300">Ldr.</p><p class="mb-2 dark:text-gray-300">Shivangi Singh alongside the President of India, Smt.</p><p class="mb-2 dark:text-gray-300">Droupadi Murmu, at Ambala, Haryana.</p><p class="mb-2 dark:text-gray-300">This release directly counters claims made by Pakistani and Al Jazeera that the Indian Air Force officer had been captured.</p>
+                  
+                  <div class="mt-4 text-sm text-gray-600 dark:text-gray-300"><a href="https://twitter.com/AdityaRajKaul/status/1983446081422901594" target="_blank" class="text-teal-500 underline hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-600">Source 1</a>, <a href="https://twitter.com/AdityaRajKaul/status/1983447429296107936" target="_blank" class="text-teal-500 underline hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-600">Source 2</a></div>
+                </div>
+              </td>
+            </tr>
+        
+
+            <tr>
+              <!-- Mobile: Full-width container -->
+              <td class="py-2 px-0 sm:px-8 text-lg w-full">
+                <div class="border border-gray-300 rounded-lg py-6 px-8 mb-4 bg-white dark:border-gray-600 dark:bg-gray-700">
+                  
+                  <!-- Mobile: Centered title -->
+                  <h3 class="text-xl font-bold mb-2 text-gray-800 dark:text-gray-200 text-center sm:text-left">News 9: Khalistani Terror Group Threatens Singer Diljit Dosanjh</h3>
+                  
+                  <!-- STATIC PARAGRAPHS ARE INJECTED HERE -->
+                  <p class="mb-2 dark:text-gray-300">The designated Khalistani terror group SFJ, through its leader Gurpatwant Singh Pannun, has issued a threat against Punjabi singer Diljit Dosanjh.</p><p class="mb-2 dark:text-gray-300">The threat stems from Dosanjh showing respect to iconic actor Amitabh Bachchan and includes plans to disrupt Dosanjh's upcoming concert in Australia.</p>
+                  
+                  <div class="mt-4 text-sm text-gray-600 dark:text-gray-300"><a href="https://twitter.com/AdityaRajKaul/status/1983390189683912771" target="_blank" class="text-teal-500 underline hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-600">Source 1</a>, <a href="https://twitter.com/AdityaRajKaul/status/1983427362219012595" target="_blank" class="text-teal-500 underline hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-600">Source 2</a></div>
+                </div>
+              </td>
+            </tr>
+        
+
+            <tr>
+              <!-- Mobile: Full-width container -->
+              <td class="py-2 px-0 sm:px-8 text-lg w-full">
+                <div class="border border-gray-300 rounded-lg py-6 px-8 mb-4 bg-white dark:border-gray-600 dark:bg-gray-700">
+                  
+                  <!-- Mobile: Centered title -->
+                  <h3 class="text-xl font-bold mb-2 text-gray-800 dark:text-gray-200 text-center sm:text-left">News 10: Indian Army Develops Homegrown Navigation System</h3>
+                  
+                  <!-- STATIC PARAGRAPHS ARE INJECTED HERE -->
+                  <p class="mb-2 dark:text-gray-300">The Indian Army is developing a homegrown navigation system designed to cover a vast area, extending from the East coast of Africa to the Malacca Strait.</p><p class="mb-2 dark:text-gray-300">This initiative, highlighted by Major General Neeraj Shukla, ADG-Strategic Planning, also involves training the National Cadet Corps (NCC) in drone warfare for future security challenges.</p>
+                  
+                  <div class="mt-4 text-sm text-gray-600 dark:text-gray-300"><a href="https://twitter.com/Sidhant/status/1983440059199263036" target="_blank" class="text-teal-500 underline hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-600">Source 1</a>, <a href="https://twitter.com/Sidhant/status/1983439249870598380" target="_blank" class="text-teal-500 underline hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-600">Source 2</a>, <a href="https://twitter.com/Sidhant/status/1983407880805175719" target="_blank" class="text-teal-500 underline hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-600">Source 3</a></div>
+                </div>
+              </td>
+            </tr>
+        
+
+            <tr>
+              <!-- Mobile: Full-width container -->
+              <td class="py-2 px-0 sm:px-8 text-lg w-full">
+                <div class="border border-gray-300 rounded-lg py-6 px-8 mb-4 bg-white dark:border-gray-600 dark:bg-gray-700">
+                  
+                  <!-- Mobile: Centered title -->
+                  <h3 class="text-xl font-bold mb-2 text-gray-800 dark:text-gray-200 text-center sm:text-left">News 11: Taliban-Pakistan Talks Resume Amid Threats</h3>
+                  
+                  <!-- STATIC PARAGRAPHS ARE INJECTED HERE -->
+                  <p class="mb-2 dark:text-gray-300">Following mediation by Qatar, Taliban-Pakistan peace talks have reportedly resumed.</p><p class="mb-2 dark:text-gray-300">This development comes after the Taliban issued a strong warning, stating that any attack by Pakistan would be met with a reciprocal response, including targeting Islamabad if Afghanistan's territory is bombed.</p><p class="mb-2 dark:text-gray-300">The user claims to have reported on the initial collapse of these talks, citing Afghan Taliban sources.</p>
+                  
+                  <div class="mt-4 text-sm text-gray-600 dark:text-gray-300"><a href="https://twitter.com/AdityaRajKaul/status/1983269664991129875" target="_blank" class="text-teal-500 underline hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-600">Source 1</a>, <a href="https://twitter.com/AdityaRajKaul/status/1983220760542875833" target="_blank" class="text-teal-500 underline hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-600">Source 2</a></div>
+                </div>
+              </td>
+            </tr>
+        
+
+            <tr>
+              <!-- Mobile: Full-width container -->
+              <td class="py-2 px-0 sm:px-8 text-lg w-full">
+                <div class="border border-gray-300 rounded-lg py-6 px-8 mb-4 bg-white dark:border-gray-600 dark:bg-gray-700">
+                  
+                  <!-- Mobile: Centered title -->
+                  <h3 class="text-xl font-bold mb-2 text-gray-800 dark:text-gray-200 text-center sm:text-left">News 12: Pakistan Issues Visas to Sikh Pilgrims for Guru Nanak Dev Ji Celebrations</h3>
+                  
+                  <!-- STATIC PARAGRAPHS ARE INJECTED HERE -->
+                  <p class="mb-2 dark:text-gray-300">The Pakistan High Commission in New Delhi has issued over 2100 visas to Sikh pilgrims from India.</p><p class="mb-2 dark:text-gray-300">These pilgrims are set to participate in the Birth Celebrations of Baba Guru Nanak Dev Ji, which will be held in Pakistan from November 4 to November 13, 2025.</p>
+                  
+                  <div class="mt-4 text-sm text-gray-600 dark:text-gray-300"><a href="https://twitter.com/Sidhant/status/1983455796022386744" target="_blank" class="text-teal-500 underline hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-600">Source 1</a></div>
+                </div>
+              </td>
+            </tr>
+        
+
+            <tr>
+              <!-- Mobile: Full-width container -->
+              <td class="py-2 px-0 sm:px-8 text-lg w-full">
+                <div class="border border-gray-300 rounded-lg py-6 px-8 mb-4 bg-white dark:border-gray-600 dark:bg-gray-700">
+                  
+                  <!-- Mobile: Centered title -->
+                  <h3 class="text-xl font-bold mb-2 text-gray-800 dark:text-gray-200 text-center sm:text-left">News 13: EU and India Make Substantial Progress in Trade Talks</h3>
+                  
+                  <!-- STATIC PARAGRAPHS ARE INJECTED HERE -->
+                  <p class="mb-2 dark:text-gray-300">According to the European Union's top trade official, significant progress has been made in the ongoing trade negotiations between the EU and India.</p>
+                  
+                  <div class="mt-4 text-sm text-gray-600 dark:text-gray-300"><a href="https://twitter.com/Sidhant/status/1983481125575242185" target="_blank" class="text-teal-500 underline hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-600">Source 1</a></div>
+                </div>
+              </td>
+            </tr>
+        
+
+            <tr>
+              <!-- Mobile: Full-width container -->
+              <td class="py-2 px-0 sm:px-8 text-lg w-full">
+                <div class="border border-gray-300 rounded-lg py-6 px-8 mb-4 bg-white dark:border-gray-600 dark:bg-gray-700">
+                  
+                  <!-- Mobile: Centered title -->
+                  <h3 class="text-xl font-bold mb-2 text-gray-800 dark:text-gray-200 text-center sm:text-left">News 14: Cyprus Foreign Minister Arrives in Delhi for Official Visit</h3>
+                  
+                  <!-- STATIC PARAGRAPHS ARE INJECTED HERE -->
+                  <p class="mb-2 dark:text-gray-300">Constantinos Kombos, Cyprus's Foreign Minister, has arrived in New Delhi for a three-day official visit.</p><p class="mb-2 dark:text-gray-300">He is scheduled to hold discussions with India's External Affairs Minister S.</p><p class="mb-2 dark:text-gray-300">Jaishankar on Thursday.</p>
+                  
+                  <div class="mt-4 text-sm text-gray-600 dark:text-gray-300"><a href="https://twitter.com/Sidhant/status/1983407606124404739" target="_blank" class="text-teal-500 underline hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-600">Source 1</a>, <a href="https://twitter.com/Sidhant/status/198313928947604769" target="_blank" class="text-teal-500 underline hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-600">Source 2</a></div>
+                </div>
+              </td>
+            </tr>
+        
+          </tbody>
+        </table>
+      </div>
+      <p class="mt-6 text-gray-600 text-center text-lg dark:text-gray-400">
+        END
+      </p>
+    </div>
+
+    <!-- Client-side script for interactivity -->
+    <script nonce="MTMzOTM5MjY0Nyw0MzkyODgzMzQ=">
+      const mainHeaderDate = document.getElementById("main-header-date");
+      const darkModeToggle = document.getElementById("darkModeToggle");
+      const sunIcon = document.getElementById("sunIcon");
+      const moonIcon = document.getElementById("moonIcon");
+
+      // --- Dark Mode Logic (Unchanged) ---
+      function applyDarkMode(isDark) {
+        const htmlElement = document.documentElement;
+        if (isDark) {
+          htmlElement.classList.add("dark");
+          sunIcon.classList.add("hidden");
+          moonIcon.classList.remove("hidden");
+        } else {
+          htmlElement.classList.remove("dark");
+          sunIcon.classList.remove("hidden");
+          moonIcon.classList.add("hidden");
+        }
+      }
+      const savedTheme = localStorage.getItem("theme");
+      applyDarkMode(savedTheme === "dark");
+      darkModeToggle.addEventListener("click", () => {
+        const isCurrentlyDark = document.documentElement.classList.contains("dark");
+        applyDarkMode(!isCurrentlyDark);
+        localStorage.setItem("theme", isCurrentlyDark ? "light" : "dark");
+      });
+
+      // --- Date Formatting for Header (Unchanged) ---
+      function formatDateForHeader() {
+        const dateString = "2025-10-29T10:51:12.653Z";
+        try {
+            const date = new Date(dateString);
+            if (isNaN(date.getTime())) return "DATE (IST)";
+            const options = { timeZone: "Asia/Kolkata", day: "numeric", month: "short", year: "numeric" };
+            const formatter = new Intl.DateTimeFormat("en-GB", options);
+            return `${formatter.format(date)} (IST)`;
+        } catch (e) {
+            console.error("Date formatting error:", e);
+            return "DATE (IST)";
+        }
+      }
+
+      // --- Function to run on page load ---
+      function initializePage() {
+        mainHeaderDate.textContent = `Daily News Digest - ${formatDateForHeader()}`;
+      }
+      
+      document.addEventListener("DOMContentLoaded", initializePage);
+    </script>
+  </body>
+</html>
