@@ -6,8 +6,7 @@ A n8n workflow that creates a news digest from your favorite X Users and YouTube
 
 You just have to input the X usernames and YouTube URLs. And this workflow will create an HTML and a radio-braodcast style MP3 and send it to your Telegram.
 
-**[Click here to download the n8n workflow JSON](https://raw.githubusercontent.com/varunsharma-co/News-Digest-n8n-Workflow/main/n8n-Workflow-X-YT-News-Digest.json)**
-**<a href="https://raw.githubusercontent.com/varunsharma-co/News-Digest-n8n-Workflow/main/n8n-Workflow-X-YT-News-Digest.json" download="n8n-Workflow-X-YT-News-Digest.json">Click here to download the n8n workflow JSON</a>**
+**<a href="https://varunsharma.b-cdn.net/projects/n8n-workflow/n8n-Workflow-X-YT-News-Digest.json" download="n8n-Workflow-X-YT-News-Digest.json">Click here to download the n8n workflow JSON</a>**
 
 ## **🧐 The Problem This Solves (Why I Built This)**
 
