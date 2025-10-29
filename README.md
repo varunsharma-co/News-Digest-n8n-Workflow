@@ -106,7 +106,7 @@ Then, it generates three parallel outputs: the `Raw Tweets Digest`, the AI-synth
 
 You will receive a Telegram message with links to four files:
 
-- [**Link 1 (Raw Tweets)](https://varunsharma.b-cdn.net/projects/n8n-workflow/Tweets_Digest_29_Oct_25_162057.html):** \[Placeholder for Sample Link 1 - Raw Tweets Digest]  [Anchor Text](URL)
+- **[Sample Link 1 - Raw Tweets Digest](https://varunsharma.b-cdn.net/projects/n8n-workflow/Tweets_Digest_29_Oct_25_162057.html)
 - **Link 2 (News Digest):** \[Placeholder for Sample Link 2 - Structured News Digest]
 - **Link 3 (Audio Broadcast):** \[Placeholder for Sample Link 3 - Audio Broadcast]
 - **Link 4 (YouTube Digest):** \[Placeholder for Sample Link 4 - YouTube Summary Digest]
